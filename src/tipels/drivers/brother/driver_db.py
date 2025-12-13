@@ -85,7 +85,7 @@ BROTHER_DRIVERS = {
         requires_non_free=False,
     ),
 
-    # Brother LPR Driver (Official)
+    # Brother LPR Driver (Official) - Generisch
     "brother-lpr": DriverInfo(
         name="brother-lpr",
         driver_type=DriverType.OFFICIAL,
@@ -96,7 +96,7 @@ BROTHER_DRIVERS = {
         requires_non_free=False,
     ),
 
-    # Brother CUPS Wrapper (Official)
+    # Brother CUPS Wrapper (Official) - Generisch
     "brother-cups-wrapper": DriverInfo(
         name="brother-cups-wrapper",
         driver_type=DriverType.OFFICIAL,
@@ -106,7 +106,54 @@ BROTHER_DRIVERS = {
         description="Offizieller Brother CUPS-Wrapper",
         requires_non_free=False,
     ),
+
+    # ========== Modellspezifische Brother Official Drivers (Fallback) ==========
+    # Hinweis: Diese werden nur verwendet wenn:
+    # 1. OpenPrinting-Treiber nicht verfügbar/funktioniert nicht
+    # 2. User explizit Brother-Treiber wünscht
+    # 3. Spezielle Features benötigt (Fax, erweiterte Funktionen)
+
+    # MFC-L2700DN - LPR Driver
+    "brother-lpr-mfcl2700dn": DriverInfo(
+        name="brother-lpr-mfcl2700dn",
+        driver_type=DriverType.OFFICIAL,
+        source=DriverSource.BROTHER_WEBSITE,
+        download_url="https://download.brother.com/welcome/dlf006893/mfcl2700dnlpr-3.5.1-1.i386.deb",
+        version="3.5.1-1",
+        supported_models=["MFC-L2700DN"],
+        description="Brother LPR Driver für MFC-L2700DN",
+        requires_non_free=False,
+    ),
+
+    # MFC-L2700DN - CUPS Wrapper
+    "brother-cups-mfcl2700dn": DriverInfo(
+        name="brother-cups-mfcl2700dn",
+        driver_type=DriverType.OFFICIAL,
+        source=DriverSource.BROTHER_WEBSITE,
+        download_url="https://download.brother.com/welcome/dlf006895/mfcl2700dncupswrapper-3.5.1-1.i386.deb",
+        version="3.5.1-1",
+        supported_models=["MFC-L2700DN"],
+        description="Brother CUPS Wrapper für MFC-L2700DN",
+        requires_non_free=False,
+    ),
+
+    # MFC-L2700DW - LPR Driver
+    "brother-lpr-mfcl2700dw": DriverInfo(
+        name="brother-lpr-mfcl2700dw",
+        driver_type=DriverType.OFFICIAL,
+        source=DriverSource.BROTHER_WEBSITE,
+        download_url="https://download.brother.com/welcome/dlf006893/mfcl2700dnlpr-3.5.1-1.i386.deb",
+        version="3.5.1-1",
+        supported_models=["MFC-L2700DW"],
+        description="Brother LPR Driver für MFC-L2700DW",
+        requires_non_free=False,
+    ),
 }
+
+# Hinweis zu Brother-URLs:
+# Die URLs sind modellspezifisch und können sich ändern.
+# Für nicht gelistete Modelle: User zur Brother-Support-Seite leiten:
+# https://support.brother.com/g/b/productsearch.aspx?c=de&lang=de&content=dl
 
 
 # Spezifische Modell-zu-Treiber-Zuordnung

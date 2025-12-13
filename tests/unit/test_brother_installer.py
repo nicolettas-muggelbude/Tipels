@@ -385,3 +385,38 @@ ii  brother-lpr-mfcl2700dn  3.5.1-1  amd64  Brother LPR Driver
         assert result is True
         mock_download.assert_called_once_with(url)
         mock_install.assert_called_once()
+
+    @patch("subprocess.run")
+    def test_install_driver_force_official(self, mock_run, installer):
+        """Test: Installation mit force_official (Brother statt OpenPrinting)"""
+        # Mock: Alle Checks zeigen "nicht installiert", Installationen erfolgreich
+        def mock_subprocess(*args, **kwargs):
+            cmd = args[0] if args else kwargs.get("args", [])
+            if "dpkg" in cmd and "-l" in cmd:
+                # dpkg -l check: nicht installiert
+                result = MagicMock()
+                result.returncode = 1
+                result.stdout = ""
+                result.stderr = ""
+                return result
+            else:
+                # apt-get install: erfolgreich
+                result = MagicMock()
+                result.returncode = 0
+                result.stdout = ""
+                result.stderr = ""
+                return result
+
+        mock_run.side_effect = mock_subprocess
+
+        # force_official=True → sollte brother-lpr nutzen statt brlaser
+        success, installed = installer.install_driver_for_model(
+            "MFC-L2700DN", install_scanner=True, force_official=True, use_sudo=False
+        )
+
+        assert success is True
+        # Sollte brother-lpr verwendet haben (alternatives[0])
+        # NICHT brlaser (preferred)
+        assert "brother-lpr" in installed
+        assert "brscan4" in installed
+        assert len(installed) == 2

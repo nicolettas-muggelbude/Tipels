@@ -379,6 +379,7 @@ class DriverInstaller:
         install_scanner: bool = True,
         prefer_opensource: bool = True,
         use_sudo: bool = True,
+        force_official: bool = False,
     ) -> Tuple[bool, List[str]]:
         """
         Installiert den empfohlenen Treiber für ein Modell
@@ -388,6 +389,11 @@ class DriverInstaller:
             install_scanner: Installiere auch Scanner-Treiber (Standard: True)
             prefer_opensource: Bevorzuge Open-Source-Treiber (Standard: True)
             use_sudo: Verwende sudo (Standard: True)
+            force_official: Erzwinge Brother Official Driver statt OpenPrinting (Standard: False)
+                           Nützlich wenn:
+                           - OpenPrinting-Treiber fehlt/funktioniert nicht
+                           - Spezielle Features benötigt (Fax, erweiterte Funktionen)
+                           - User explizit Brother-Treiber wünscht
 
         Returns:
             Tuple[bool, List[str]]: (Erfolg, Liste installierter Pakete)
@@ -395,12 +401,30 @@ class DriverInstaller:
         Raises:
             DriverInstallationError: Bei Installationsfehler
         """
-        self.logger.info(f"Installiere Treiber für Modell: {model}")
+        self.logger.info(
+            f"Installiere Treiber für Modell: {model} "
+            f"(force_official={force_official})"
+        )
 
         installed_packages = []
 
         # Drucker-Treiber
-        driver_name = get_recommended_driver(model, prefer_opensource)
+        if force_official:
+            # User möchte explizit Brother Official Driver
+            # Ignoriere prefer_opensource und nutze alternatives[0]
+            from tipels.drivers.brother.driver_db import MODEL_DRIVER_MAPPING
+
+            mapping = MODEL_DRIVER_MAPPING.get(model)
+            if not mapping or not mapping.get("alternatives"):
+                error_msg = f"Kein Brother Official Driver für Modell '{model}' hinterlegt"
+                self.logger.error(error_msg)
+                raise DriverInstallationError(error_msg)
+
+            driver_name = mapping["alternatives"][0]
+            self.logger.info(f"Verwende Brother Official Driver: {driver_name}")
+        else:
+            # Standard: Empfohlener Treiber (OpenPrinting bevorzugt)
+            driver_name = get_recommended_driver(model, prefer_opensource)
         if not driver_name:
             error_msg = f"Kein Treiber für Modell '{model}' gefunden"
             self.logger.error(error_msg)
