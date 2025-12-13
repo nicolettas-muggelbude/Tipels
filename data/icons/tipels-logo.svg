@@ -12,34 +12,34 @@
   <!-- Leichter Schatten/Papier-Textur -->
   <rect width="256" height="256" fill="#F5F5F5" opacity="0.3" rx="8"/>
 
-  <!-- Vogelfuß-Abdruck 1 (unten links) - 45° gedreht, größer -->
-  <g id="footprint1" transform="translate(70, 165) rotate(45)">
+  <!-- Vogelfuß-Abdruck 1 (unten links) - 45° gedreht, deutlich größer -->
+  <g id="footprint1" transform="translate(60, 170) rotate(45)">
     <!-- Hauptzehe (mittig, nach vorne) -->
-    <ellipse cx="0" cy="-14" rx="6" ry="20" fill="#3F51B5" opacity="0.85"/>
+    <ellipse cx="0" cy="-20" rx="9" ry="30" fill="#3F51B5" opacity="0.85"/>
 
     <!-- Linke Zehe (nach vorne-links) -->
-    <ellipse cx="-14" cy="-11" rx="5" ry="16" fill="#3F51B5" opacity="0.85" transform="rotate(-25 -14 -11)"/>
+    <ellipse cx="-20" cy="-16" rx="7" ry="24" fill="#3F51B5" opacity="0.85" transform="rotate(-25 -20 -16)"/>
 
     <!-- Rechte Zehe (nach vorne-rechts) -->
-    <ellipse cx="14" cy="-11" rx="5" ry="16" fill="#3F51B5" opacity="0.85" transform="rotate(25 14 -11)"/>
+    <ellipse cx="20" cy="-16" rx="7" ry="24" fill="#3F51B5" opacity="0.85" transform="rotate(25 20 -16)"/>
 
     <!-- Hintere Zehe (nach hinten) -->
-    <ellipse cx="0" cy="11" rx="4.5" ry="12" fill="#3F51B5" opacity="0.85"/>
+    <ellipse cx="0" cy="16" rx="6.5" ry="18" fill="#3F51B5" opacity="0.85"/>
   </g>
 
-  <!-- Vogelfuß-Abdruck 2 (oben rechts) - 45° gedreht, größer -->
-  <g id="footprint2" transform="translate(165, 90) rotate(45)">
+  <!-- Vogelfuß-Abdruck 2 (oben rechts, mehr versetzt) - 45° gedreht, deutlich größer -->
+  <g id="footprint2" transform="translate(175, 75) rotate(45)">
     <!-- Hauptzehe (mittig, nach vorne) -->
-    <ellipse cx="0" cy="-14" rx="6" ry="20" fill="#3F51B5" opacity="0.85"/>
+    <ellipse cx="0" cy="-20" rx="9" ry="30" fill="#3F51B5" opacity="0.85"/>
 
     <!-- Linke Zehe (nach vorne-links) -->
-    <ellipse cx="-14" cy="-11" rx="5" ry="16" fill="#3F51B5" opacity="0.85" transform="rotate(-25 -14 -11)"/>
+    <ellipse cx="-20" cy="-16" rx="7" ry="24" fill="#3F51B5" opacity="0.85" transform="rotate(-25 -20 -16)"/>
 
     <!-- Rechte Zehe (nach vorne-rechts) -->
-    <ellipse cx="14" cy="-11" rx="5" ry="16" fill="#3F51B5" opacity="0.85" transform="rotate(25 14 -11)"/>
+    <ellipse cx="20" cy="-16" rx="7" ry="24" fill="#3F51B5" opacity="0.85" transform="rotate(25 20 -16)"/>
 
     <!-- Hintere Zehe (nach hinten) -->
-    <ellipse cx="0" cy="11" rx="4.5" ry="12" fill="#3F51B5" opacity="0.85"/>
+    <ellipse cx="0" cy="16" rx="6.5" ry="18" fill="#3F51B5" opacity="0.85"/>
   </g>
 
   <!-- Text "Tipels" (optional) -->
