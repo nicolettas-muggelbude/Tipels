@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Diskussionen & Fragen
+    url: https://github.com/nicolettas-muggelbude/Tipels/discussions
+    about: Stelle Fragen, teile Ideen oder diskutiere über Tipels
+  - name: 📚 Dokumentation
+    url: https://github.com/nicolettas-muggelbude/Tipels/tree/main/docs
+    about: Durchsuche die Dokumentation für Hilfe und Anleitungen

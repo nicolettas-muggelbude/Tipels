@@ -1,0 +1,55 @@
+name: Dokumentations-Verbesserung
+description: Schlage Verbesserungen für die Dokumentation vor
+title: "[Docs]: "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke für deinen Vorschlag zur Verbesserung der Dokumentation!
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Welche Dokumentation betrifft es?
+      options:
+        - README.md
+        - Benutzer-Handbuch
+        - Entwickler-Dokumentation
+        - Troubleshooting-Guide
+        - API-Dokumentation
+        - Code-Kommentare
+        - Sonstiges
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-state
+    attributes:
+      label: Aktueller Stand
+      description: Was ist aktuell unklar oder fehlt?
+      placeholder: "Die Installation unter Fedora ist nicht dokumentiert..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Verbesserungsvorschlag
+      description: Was sollte geändert oder hinzugefügt werden?
+      placeholder: "Es sollte eine Sektion für Fedora-Installation hinzugefügt werden mit..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Zusätzliche Informationen
+      description: Links, Screenshots, Beispiele?
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Beitrag
+      options:
+        - label: Ich würde gerne einen Pull Request mit der Verbesserung erstellen

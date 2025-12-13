@@ -1,0 +1,89 @@
+name: Hardware-Support-Anfrage
+description: Anfrage zur Unterstützung eines neuen Druckers/Scanners
+title: "[Hardware]: "
+labels: ["hardware-support", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Möchtest du, dass Tipels ein neues Gerät unterstützt? Fülle dieses Formular aus!
+
+  - type: input
+    id: manufacturer
+    attributes:
+      label: Hersteller
+      placeholder: "z.B. Brother, HP, Epson, Canon"
+    validations:
+      required: true
+
+  - type: input
+    id: model
+    attributes:
+      label: Modell
+      placeholder: "z.B. MFC-L2700DN"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device-type
+    attributes:
+      label: Gerätetyp
+      options:
+        - Drucker
+        - Scanner
+        - Multifunktionsgerät (Drucker + Scanner)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: connection
+    attributes:
+      label: Verbindungsart
+      options:
+        - USB
+        - Netzwerk (LAN)
+        - Netzwerk (WLAN)
+        - Bluetooth
+        - Sonstiges
+      multiple: true
+    validations:
+      required: true
+
+  - type: textarea
+    id: driver-info
+    attributes:
+      label: Treiber-Informationen
+      description: Weißt du, wo die Treiber verfügbar sind?
+      placeholder: |
+        - Link zur Hersteller-Website
+        - Ubuntu-Paket-Name
+        - Open-Source-Treiber
+    validations:
+      required: false
+
+  - type: dropdown
+    id: testing
+    attributes:
+      label: Kannst du beim Testen helfen?
+      description: Hast du Zugriff auf dieses Gerät?
+      options:
+        - "Ja, ich habe das Gerät"
+        - "Nein, nur Anfrage"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Zusätzliche Informationen
+      description: Weitere Details zum Gerät
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checkliste
+      options:
+        - label: Ich habe geprüft, dass dieses Gerät noch nicht unterstützt wird
+          required: true
+        - label: Ich habe nach ähnlichen Issues gesucht
+          required: true
