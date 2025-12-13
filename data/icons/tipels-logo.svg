@@ -12,37 +12,37 @@
   <!-- Leichter Schatten/Papier-Textur -->
   <rect width="256" height="256" fill="#F5F5F5" opacity="0.3" rx="8"/>
 
-  <!-- Vogelfuß-Abdruck 1 (unten links) -->
-  <g id="footprint1" transform="translate(65, 170)">
+  <!-- Vogelfuß-Abdruck 1 (unten links) - 45° gedreht, größer -->
+  <g id="footprint1" transform="translate(70, 165) rotate(45)">
     <!-- Hauptzehe (mittig, nach vorne) -->
-    <ellipse cx="0" cy="-10" rx="4.5" ry="14" fill="#3F51B5" opacity="0.85"/>
+    <ellipse cx="0" cy="-14" rx="6" ry="20" fill="#3F51B5" opacity="0.85"/>
 
     <!-- Linke Zehe (nach vorne-links) -->
-    <ellipse cx="-10" cy="-8" rx="3.5" ry="11" fill="#3F51B5" opacity="0.85" transform="rotate(-25 -10 -8)"/>
+    <ellipse cx="-14" cy="-11" rx="5" ry="16" fill="#3F51B5" opacity="0.85" transform="rotate(-25 -14 -11)"/>
 
     <!-- Rechte Zehe (nach vorne-rechts) -->
-    <ellipse cx="10" cy="-8" rx="3.5" ry="11" fill="#3F51B5" opacity="0.85" transform="rotate(25 10 -8)"/>
+    <ellipse cx="14" cy="-11" rx="5" ry="16" fill="#3F51B5" opacity="0.85" transform="rotate(25 14 -11)"/>
 
     <!-- Hintere Zehe (nach hinten) -->
-    <ellipse cx="0" cy="8" rx="3" ry="8" fill="#3F51B5" opacity="0.85"/>
+    <ellipse cx="0" cy="11" rx="4.5" ry="12" fill="#3F51B5" opacity="0.85"/>
   </g>
 
-  <!-- Vogelfuß-Abdruck 2 (oben rechts, leicht versetzt) -->
-  <g id="footprint2" transform="translate(155, 90)">
+  <!-- Vogelfuß-Abdruck 2 (oben rechts) - 45° gedreht, größer -->
+  <g id="footprint2" transform="translate(165, 90) rotate(45)">
     <!-- Hauptzehe (mittig, nach vorne) -->
-    <ellipse cx="0" cy="-10" rx="4.5" ry="14" fill="#3F51B5" opacity="0.85"/>
+    <ellipse cx="0" cy="-14" rx="6" ry="20" fill="#3F51B5" opacity="0.85"/>
 
     <!-- Linke Zehe (nach vorne-links) -->
-    <ellipse cx="-10" cy="-8" rx="3.5" ry="11" fill="#3F51B5" opacity="0.85" transform="rotate(-25 -10 -8)"/>
+    <ellipse cx="-14" cy="-11" rx="5" ry="16" fill="#3F51B5" opacity="0.85" transform="rotate(-25 -14 -11)"/>
 
     <!-- Rechte Zehe (nach vorne-rechts) -->
-    <ellipse cx="10" cy="-8" rx="3.5" ry="11" fill="#3F51B5" opacity="0.85" transform="rotate(25 10 -8)"/>
+    <ellipse cx="14" cy="-11" rx="5" ry="16" fill="#3F51B5" opacity="0.85" transform="rotate(25 14 -11)"/>
 
     <!-- Hintere Zehe (nach hinten) -->
-    <ellipse cx="0" cy="8" rx="3" ry="8" fill="#3F51B5" opacity="0.85"/>
+    <ellipse cx="0" cy="11" rx="4.5" ry="12" fill="#3F51B5" opacity="0.85"/>
   </g>
 
-  <!-- Text "Tipels" (optional, kann entfernt werden) -->
+  <!-- Text "Tipels" (optional) -->
   <text x="128" y="240"
         font-family="'Ubuntu', 'Segoe UI', 'Roboto', sans-serif"
         font-size="28"

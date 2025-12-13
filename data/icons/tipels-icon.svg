@@ -12,33 +12,33 @@
   <!-- Leichter Schatten -->
   <rect width="128" height="128" fill="#F5F5F5" opacity="0.3" rx="16"/>
 
-  <!-- Vogelfuß-Abdruck 1 (unten links) -->
-  <g id="footprint1" transform="translate(35, 85)">
+  <!-- Vogelfuß-Abdruck 1 (unten links) - 45° gedreht, größer -->
+  <g id="footprint1" transform="translate(38, 85) rotate(45)">
     <!-- Hauptzehe (mittig) -->
-    <ellipse cx="0" cy="-6" rx="3.5" ry="11" fill="#3F51B5" opacity="0.9"/>
+    <ellipse cx="0" cy="-10" rx="5" ry="16" fill="#3F51B5" opacity="0.9"/>
 
     <!-- Linke Zehe -->
-    <ellipse cx="-7" cy="-5" rx="2.8" ry="8" fill="#3F51B5" opacity="0.9" transform="rotate(-25 -7 -5)"/>
+    <ellipse cx="-11" cy="-8" rx="4" ry="13" fill="#3F51B5" opacity="0.9" transform="rotate(-25 -11 -8)"/>
 
     <!-- Rechte Zehe -->
-    <ellipse cx="7" cy="-5" rx="2.8" ry="8" fill="#3F51B5" opacity="0.9" transform="rotate(25 7 -5)"/>
+    <ellipse cx="11" cy="-8" rx="4" ry="13" fill="#3F51B5" opacity="0.9" transform="rotate(25 11 -8)"/>
 
     <!-- Hintere Zehe -->
-    <ellipse cx="0" cy="6" rx="2.5" ry="6" fill="#3F51B5" opacity="0.9"/>
+    <ellipse cx="0" cy="9" rx="3.5" ry="10" fill="#3F51B5" opacity="0.9"/>
   </g>
 
-  <!-- Vogelfuß-Abdruck 2 (oben rechts) -->
-  <g id="footprint2" transform="translate(80, 45)">
+  <!-- Vogelfuß-Abdruck 2 (oben rechts) - 45° gedreht, größer -->
+  <g id="footprint2" transform="translate(85, 45) rotate(45)">
     <!-- Hauptzehe (mittig) -->
-    <ellipse cx="0" cy="-6" rx="3.5" ry="11" fill="#3F51B5" opacity="0.9"/>
+    <ellipse cx="0" cy="-10" rx="5" ry="16" fill="#3F51B5" opacity="0.9"/>
 
     <!-- Linke Zehe -->
-    <ellipse cx="-7" cy="-5" rx="2.8" ry="8" fill="#3F51B5" opacity="0.9" transform="rotate(-25 -7 -5)"/>
+    <ellipse cx="-11" cy="-8" rx="4" ry="13" fill="#3F51B5" opacity="0.9" transform="rotate(-25 -11 -8)"/>
 
     <!-- Rechte Zehe -->
-    <ellipse cx="7" cy="-5" rx="2.8" ry="8" fill="#3F51B5" opacity="0.9" transform="rotate(25 7 -5)"/>
+    <ellipse cx="11" cy="-8" rx="4" ry="13" fill="#3F51B5" opacity="0.9" transform="rotate(25 11 -8)"/>
 
     <!-- Hintere Zehe -->
-    <ellipse cx="0" cy="6" rx="2.5" ry="6" fill="#3F51B5" opacity="0.9"/>
+    <ellipse cx="0" cy="9" rx="3.5" ry="10" fill="#3F51B5" opacity="0.9"/>
   </g>
 </svg>
