@@ -1,0 +1,274 @@
+"""
+Tests für Brother Driver-Installer
+"""
+
+import pytest
+from unittest.mock import MagicMock, patch
+import subprocess
+
+from tipels.drivers.brother.installer import (
+    DriverInstaller,
+    DriverInstallationError,
+)
+from tipels.core.logger import TipelsLogger
+
+
+class TestDriverInstaller:
+    """Tests für DriverInstaller"""
+
+    @pytest.fixture
+    def mock_logger(self):
+        """Mock Logger"""
+        return MagicMock(spec=TipelsLogger)
+
+    @pytest.fixture
+    def installer(self, mock_logger):
+        """DriverInstaller Instanz"""
+        return DriverInstaller(logger=mock_logger)
+
+    def test_installer_initialization(self, mock_logger):
+        """Test: Installer initialisieren"""
+        installer = DriverInstaller(logger=mock_logger)
+        assert installer.logger == mock_logger
+
+    @patch("subprocess.run")
+    def test_is_driver_installed_true(self, mock_run, installer):
+        """Test: Treiber ist installiert"""
+        # Mock dpkg -l Ausgabe mit installiertem Paket
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_result.stdout = "ii  printer-driver-brlaser  6.0-1  all  Brother laser printer driver"
+        mock_run.return_value = mock_result
+
+        result = installer.is_driver_installed("printer-driver-brlaser")
+
+        assert result is True
+        mock_run.assert_called_once()
+
+    @patch("subprocess.run")
+    def test_is_driver_installed_false(self, mock_run, installer):
+        """Test: Treiber ist nicht installiert"""
+        # Mock dpkg -l Ausgabe ohne Paket
+        mock_result = MagicMock()
+        mock_result.returncode = 1
+        mock_result.stdout = ""
+        mock_run.return_value = mock_result
+
+        result = installer.is_driver_installed("printer-driver-brlaser")
+
+        assert result is False
+
+    @patch("subprocess.run")
+    def test_get_installed_version(self, mock_run, installer):
+        """Test: Installierte Version abrufen"""
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_result.stdout = "ii  printer-driver-brlaser  6.0-1  all  Brother laser printer driver"
+        mock_run.return_value = mock_result
+
+        version = installer.get_installed_version("printer-driver-brlaser")
+
+        assert version == "6.0-1"
+
+    @patch("subprocess.run")
+    def test_get_installed_version_not_installed(self, mock_run, installer):
+        """Test: Version von nicht installiertem Paket"""
+        mock_result = MagicMock()
+        mock_result.returncode = 1
+        mock_result.stdout = ""
+        mock_run.return_value = mock_result
+
+        version = installer.get_installed_version("printer-driver-brlaser")
+
+        assert version is None
+
+    @patch("subprocess.run")
+    def test_install_from_repository_already_installed(self, mock_run, installer):
+        """Test: Installation wenn bereits installiert"""
+        # Mock: Paket bereits installiert
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_result.stdout = "ii  printer-driver-brlaser  6.0-1  all  Brother laser printer driver"
+        mock_run.return_value = mock_result
+
+        result = installer.install_from_repository("printer-driver-brlaser", use_sudo=False)
+
+        assert result is True
+        # Sollte nur dpkg -l aufrufen, nicht apt-get install
+        assert mock_run.call_count == 1
+
+    @patch("subprocess.run")
+    def test_install_from_repository_success(self, mock_run, installer):
+        """Test: Erfolgreiche Installation"""
+        # Erster Call: dpkg -l (nicht installiert)
+        # Zweiter Call: apt-get install (erfolgreich)
+        mock_results = [
+            MagicMock(returncode=1, stdout=""),  # dpkg -l: nicht installiert
+            MagicMock(returncode=0, stdout="", stderr=""),  # apt-get install: erfolgreich
+        ]
+        mock_run.side_effect = mock_results
+
+        result = installer.install_from_repository("printer-driver-brlaser", use_sudo=False)
+
+        assert result is True
+        assert mock_run.call_count == 2
+
+        # Prüfe apt-get install wurde aufgerufen
+        install_call = mock_run.call_args_list[1]
+        assert "apt-get" in install_call[0][0]
+        assert "install" in install_call[0][0]
+        assert "printer-driver-brlaser" in install_call[0][0]
+
+    @patch("subprocess.run")
+    def test_install_from_repository_with_sudo(self, mock_run, installer):
+        """Test: Installation mit sudo"""
+        mock_results = [
+            MagicMock(returncode=1, stdout=""),  # nicht installiert
+            MagicMock(returncode=0, stdout="", stderr=""),  # erfolgreich
+        ]
+        mock_run.side_effect = mock_results
+
+        result = installer.install_from_repository("printer-driver-brlaser", use_sudo=True)
+
+        assert result is True
+
+        # Prüfe dass sudo verwendet wurde
+        install_call = mock_run.call_args_list[1]
+        assert install_call[0][0][0] == "sudo"
+
+    @patch("subprocess.run")
+    def test_install_from_repository_failure(self, mock_run, installer):
+        """Test: Fehlgeschlagene Installation"""
+        mock_results = [
+            MagicMock(returncode=1, stdout=""),  # nicht installiert
+            MagicMock(returncode=1, stdout="", stderr="E: Package not found"),  # Installation fehlgeschlagen
+        ]
+        mock_run.side_effect = mock_results
+
+        with pytest.raises(DriverInstallationError, match="Installation fehlgeschlagen"):
+            installer.install_from_repository("printer-driver-brlaser", use_sudo=False)
+
+    @patch("subprocess.run")
+    def test_update_package_cache_success(self, mock_run, installer):
+        """Test: Erfolgreiche Package-Cache-Aktualisierung"""
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_result.stdout = ""
+        mock_run.return_value = mock_result
+
+        result = installer.update_package_cache(use_sudo=False)
+
+        assert result is True
+        mock_run.assert_called_once()
+        assert "apt-get" in mock_run.call_args[0][0]
+        assert "update" in mock_run.call_args[0][0]
+
+    @patch("subprocess.run")
+    def test_install_driver_for_model_success(self, mock_run, installer):
+        """Test: Erfolgreiche Treiber-Installation für Modell"""
+        # Mock: alle Checks und Installationen erfolgreich
+        mock_results = [
+            MagicMock(returncode=1, stdout=""),  # brlaser nicht installiert
+            MagicMock(returncode=0, stdout="", stderr=""),  # brlaser Installation erfolgreich
+            MagicMock(returncode=1, stdout=""),  # brscan4 nicht installiert
+            MagicMock(returncode=0, stdout="", stderr=""),  # brscan4 Installation erfolgreich
+        ]
+        mock_run.side_effect = mock_results
+
+        success, installed = installer.install_driver_for_model(
+            "MFC-L2700DN", install_scanner=True, use_sudo=False
+        )
+
+        assert success is True
+        assert "printer-driver-brlaser" in installed
+        assert "brscan4" in installed
+        assert len(installed) == 2
+
+    @patch("subprocess.run")
+    def test_install_driver_for_model_printer_only(self, mock_run, installer):
+        """Test: Nur Drucker-Treiber installieren"""
+        mock_results = [
+            MagicMock(returncode=1, stdout=""),  # nicht installiert
+            MagicMock(returncode=0, stdout="", stderr=""),  # Installation erfolgreich
+        ]
+        mock_run.side_effect = mock_results
+
+        success, installed = installer.install_driver_for_model(
+            "MFC-L2700DN", install_scanner=False, use_sudo=False
+        )
+
+        assert success is True
+        assert "printer-driver-brlaser" in installed
+        assert "brscan4" not in installed
+        assert len(installed) == 1
+
+    def test_install_driver_for_unknown_model(self, installer):
+        """Test: Installation für unbekanntes Modell"""
+        with pytest.raises(DriverInstallationError, match="Kein Treiber"):
+            installer.install_driver_for_model("UNKNOWN-MODEL", use_sudo=False)
+
+    @patch("subprocess.run")
+    def test_uninstall_driver_success(self, mock_run, installer):
+        """Test: Erfolgreiche Deinstallation"""
+        mock_results = [
+            MagicMock(returncode=0, stdout="ii  printer-driver-brlaser"),  # installiert
+            MagicMock(returncode=0, stdout="", stderr=""),  # Deinstallation erfolgreich
+        ]
+        mock_run.side_effect = mock_results
+
+        result = installer.uninstall_driver("printer-driver-brlaser", use_sudo=False)
+
+        assert result is True
+        assert mock_run.call_count == 2
+
+        # Prüfe apt-get remove wurde aufgerufen
+        remove_call = mock_run.call_args_list[1]
+        assert "apt-get" in remove_call[0][0]
+        assert "remove" in remove_call[0][0]
+        assert "printer-driver-brlaser" in remove_call[0][0]
+
+    @patch("subprocess.run")
+    def test_uninstall_driver_not_installed(self, mock_run, installer):
+        """Test: Deinstallation von nicht installiertem Treiber"""
+        mock_result = MagicMock()
+        mock_result.returncode = 1
+        mock_result.stdout = ""
+        mock_run.return_value = mock_result
+
+        result = installer.uninstall_driver("printer-driver-brlaser", use_sudo=False)
+
+        assert result is True
+        # Sollte nur dpkg -l aufrufen, nicht apt-get remove
+        assert mock_run.call_count == 1
+
+    @patch("subprocess.run")
+    def test_list_installed_brother_drivers(self, mock_run, installer):
+        """Test: Liste installierter Brother-Treiber"""
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_result.stdout = """
+ii  printer-driver-brlaser  6.0-1  all  Brother laser printer driver
+ii  brscan4  0.4.11-1  amd64  Brother Scanner Driver
+ii  cups  2.4.2-1  amd64  Common UNIX Printing System
+ii  brother-lpr-mfcl2700dn  3.5.1-1  amd64  Brother LPR Driver
+        """
+        mock_run.return_value = mock_result
+
+        installed = installer.list_installed_brother_drivers()
+
+        assert len(installed) == 3
+        assert "printer-driver-brlaser" in installed
+        assert "brscan4" in installed
+        assert "brother-lpr-mfcl2700dn" in installed
+        assert "cups" not in installed  # CUPS sollte nicht in der Liste sein
+
+    @patch("subprocess.run")
+    def test_install_timeout(self, mock_run, installer):
+        """Test: Installation Timeout"""
+        mock_run.side_effect = [
+            MagicMock(returncode=1, stdout=""),  # nicht installiert
+            subprocess.TimeoutExpired(cmd=["apt-get"], timeout=300),  # Timeout
+        ]
+
+        with pytest.raises(DriverInstallationError, match="zu lange gedauert"):
+            installer.install_from_repository("printer-driver-brlaser", use_sudo=False)
