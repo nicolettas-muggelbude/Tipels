@@ -43,5 +43,5 @@
   </g>
 
   <!-- Rahmen um das Icon -->
-  <rect width="128" height="128" fill="none" stroke="#3F51B5" stroke-width="2.5" rx="16" opacity="0.4"/>
+  <rect width="128" height="128" fill="none" stroke="#3F51B5" stroke-width="4" rx="16" opacity="0.4"/>
 </svg>
