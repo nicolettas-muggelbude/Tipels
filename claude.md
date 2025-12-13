@@ -117,20 +117,27 @@ Tipels ist eine Linux-Applikation zur vereinfachten Einrichtung von Druckern und
 - [x] Projektplanung erstellt
 - [x] Anforderungen geklärt
 - [x] Technische Entscheidungen getroffen
-- [ ] Detaillierter Implementierungsplan
-- [ ] GitHub-Repository einrichten
+- [x] Detaillierter Implementierungsplan
+- [x] GitHub-Repository-Struktur lokal
+- [x] Logger-System (94% Coverage)
+- [x] Config-System (79% Coverage)
+- [x] Unit-Tests (29 Tests, 52% Coverage)
+- [x] CI/CD (GitHub Actions)
+- [x] Logo & Branding
+- [x] README.md aktualisiert
+- [ ] GitHub-Repository online erstellen
 - [ ] Prototyp (USB+Netzwerk, Drucker+Scanner)
 - [ ] Treiberlogik
 - [ ] CUPS/SANE-Integration
 - [ ] GUI-Entwicklung (GTK)
-- [ ] CLI-Interface
+- [ ] CLI-Interface (funktionsfähig)
 - [ ] PolicyKit-Integration
 - [ ] Backup/Restore-Funktion
-- [ ] Tests & CI/CD
-- [ ] Dokumentation
-  - [ ] Benutzer-Handbuch
-  - [ ] Entwickler-Dokumentation
-  - [ ] Troubleshooting-Guide
+- [ ] Dokumentation erweitern
+  - [x] Basis-Struktur
+  - [ ] Benutzer-Handbuch (Details)
+  - [ ] Entwickler-Dokumentation (Details)
+  - [ ] Troubleshooting-Guide (Details)
 
 ## Funktionsumfang v1.0
 - [x] Brother-Geräte (alle Modelle)

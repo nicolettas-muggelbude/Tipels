@@ -1,11 +1,22 @@
 # Tipels
 
 <p align="center">
-  <img src="data/icons/tipels-logo.svg" alt="Tipels Logo" width="200"/>
+  <img src="data/icons/tipels-logo.svg" alt="Tipels Logo" width="256"/>
 </p>
 
 <p align="center">
   <strong>Einfache Einrichtung von Druckern und Scannern unter Linux</strong>
+</p>
+
+<p align="center">
+  <em>🐾 Kleine Schritte zum perfekt eingerichteten Drucker 🐾</em>
+</p>
+
+<p align="center">
+  <a href="https://github.com/nicolettas-muggelbude/Tipels/actions"><img src="https://img.shields.io/github/actions/workflow/status/nicolettas-muggelbude/Tipels/tests.yml?branch=main" alt="Build Status"/></a>
+  <a href="https://github.com/nicolettas-muggelbude/Tipels/releases"><img src="https://img.shields.io/github/v/release/nicolettas-muggelbude/Tipels?include_prereleases" alt="Release"/></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue.svg" alt="License"/></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python Version"/></a>
 </p>
 
 <p align="center">
@@ -18,109 +29,122 @@
 
 ---
 
-## Über Tipels
+## 🐦 Über Tipels
 
-Tipels ist eine benutzerfreundliche Linux-Applikation, die das Einrichten von Druckern und Scannern vereinfacht. Schluss mit komplexen Terminal-Befehlen und Treibersuche - Tipels erledigt alles automatisch.
+**Tipels** (von *"tipeln"* = kleine Schritte machen) ist eine benutzerfreundliche Linux-Applikation, die das Einrichten von Druckern und Scannern vereinfacht.
 
-### Warum Tipels?
+Wie Vogelfußspuren auf einem Blatt Papier führt dich Tipels Schritt für Schritt zur perfekt eingerichteten Hardware - **ohne komplexe Terminal-Befehle, ohne Treibersuche, ohne Kopfschmerzen**.
 
-- **Plug & Play**: Hardware anschließen, Tipels starten, fertig!
-- **Automatische Treiberinstallation**: Kein manuelles Herunterladen mehr
-- **Netzwerk & USB**: Unterstützt beide Verbindungsarten
-- **Backup & Restore**: Konfiguration sichern und wiederherstellen
-- **Open Source**: Vollständig transparent und frei verfügbar
+### 💡 Warum Tipels?
 
-### Unterstützte Hersteller
+- **🔌 Plug & Play**: Hardware anschließen, Tipels starten, fertig!
+- **⚡ Automatische Treiberinstallation**: Kein manuelles Herunterladen mehr
+- **🌐 Netzwerk & USB**: Unterstützt beide Verbindungsarten
+- **💾 Backup & Restore**: Konfiguration sichern und wiederherstellen
+- **🔓 Open Source**: Vollständig transparent und frei verfügbar (GPLv3)
+- **🇩🇪 🇬🇧 Mehrsprachig**: Deutsch und Englisch
 
-**v1.0:**
-- ✅ Brother (alle Modelle)
+### 🖨️ Unterstützte Hersteller
 
-**Geplant (v2.0+):**
+**v1.0 (In Entwicklung):**
+- ✅ **Brother** (alle Modelle)
+  - Testgerät: Brother MFC-L2700DN
+
+**v2.0+ (Geplant):**
 - 🔜 HP
 - 🔜 Epson
 - 🔜 Canon
 
 ---
 
-## Features
+## ✨ Features
 
 ### 🖨️ Drucker-Setup
-- Automatische Erkennung von USB- und Netzwerk-Druckern
-- Intelligente Treiberauswahl (Repository, Hersteller-Website, Open-Source)
-- Automatische CUPS-Integration
-- Testdruck nach Installation
-- Toner-/Tintenstatus anzeigen
+- ✅ Automatische Erkennung von USB- und Netzwerk-Druckern
+- ✅ Intelligente Treiberauswahl (Repository → Hersteller → Open-Source)
+- ✅ Automatische CUPS-Integration
+- ✅ Testdruck nach Installation
+- ✅ Toner-/Tintenstatus anzeigen
 
 ### 🖼️ Scanner-Setup
-- Automatische Scanner-Erkennung
-- SANE-Integration
-- Automatisches Hinzufügen zu erforderlichen Benutzergruppen
-- Testscan nach Installation
+- ✅ Automatische Scanner-Erkennung
+- ✅ SANE-Integration
+- ✅ Automatisches Hinzufügen zu Benutzergruppen (`lp`, `scanner`, `saned`)
+- ✅ Testscan nach Installation
 
 ### 💾 Backup & Restore
-- Konfiguration sichern (Drucker, Scanner, Treiber)
-- Wiederherstellung auf gleichem oder neuem System
-- Automatische Treiber-Nachinstallation
+- ✅ Konfiguration sichern (Drucker, Scanner, Treiber)
+- ✅ Wiederherstellung auf gleichem oder neuem System
+- ✅ Automatische Treiber-Nachinstallation
+- ✅ JSON-Format (`.tipels-backup`)
 
 ### 🎨 Benutzerfreundlich
-- GTK-GUI für Desktop-Umgebungen (GNOME, Cinnamon, XFCE)
-- CLI für Poweruser und Skripte
-- Deutsch und Englisch
-- Desktop-Benachrichtigungen
-- Hilfreiche Fehlermeldungen
+- ✅ **GTK-GUI** für Desktop-Umgebungen (GNOME, Cinnamon, XFCE)
+- ✅ **CLI** für Poweruser und Skripte
+- ✅ Deutsch und Englisch (i18n)
+- ✅ Desktop-Benachrichtigungen
+- ✅ Hilfreiche Fehlermeldungen mit Crash-Report-Generator
 
 ### 🔒 Sicherheit
-- PolicyKit-Integration für sichere Berechtigungen (GUI)
-- Granulare Rechte-Vergabe
-- Kein unnötiger Root-Zugriff
+- ✅ **PolicyKit-Integration** für sichere Berechtigungen (GUI)
+- ✅ Granulare Rechte-Vergabe (nur benötigte Aktionen)
+- ✅ Kein unnötiger Root-Zugriff
 
 ---
 
-## Installation
+## 📦 Installation
+
+### Voraussetzungen
+
+- **OS**: Ubuntu 20.04+, Debian 11+, Linux Mint 20+
+- **Python**: 3.10 oder höher
+- **Desktop**: GTK-basierte Umgebung (GNOME, Cinnamon, XFCE, MATE)
 
 ### Ubuntu / Debian / Linux Mint
 
-#### Via .deb-Paket (empfohlen)
+#### Via .deb-Paket (empfohlen - *noch nicht verfügbar*)
 ```bash
 # Download der neuesten Version
-wget https://github.com/[username]/Tipels/releases/download/v1.0.0/tipels_1.0.0_amd64.deb
+wget https://github.com/nicolettas-muggelbude/Tipels/releases/download/v1.0.0/tipels_1.0.0_amd64.deb
 
 # Installation
 sudo dpkg -i tipels_1.0.0_amd64.deb
 sudo apt-get install -f  # Falls Abhängigkeiten fehlen
 ```
 
-#### Via Snap
+#### Via Snap (*noch nicht verfügbar*)
 ```bash
 sudo snap install tipels
 ```
 
-### Aus dem Quellcode
+### 🛠️ Aus dem Quellcode (Development)
 
 ```bash
-# Repository klonen
-git clone https://github.com/[username]/Tipels.git
+# 1. Repository klonen
+git clone https://github.com/nicolettas-muggelbude/Tipels.git
 cd Tipels
 
-# Virtuelle Umgebung erstellen
+# 2. System-Dependencies installieren
+./install-system-deps.sh
+
+# 3. Virtual Environment erstellen
 python3 -m venv venv
 source venv/bin/activate
 
-# Abhängigkeiten installieren
-pip install -r requirements.txt
+# 4. Python-Dependencies installieren
+make install-dev
 
-# Tipels installieren
-pip install -e .
-
-# Starten
-tipels
+# 5. Tipels starten
+tipels --version
 ```
+
+**Hinweis**: PyGObject und dbus-python werden über System-Pakete installiert, nicht über pip!
 
 ---
 
-## Verwendung
+## 🚀 Verwendung
 
-### GUI
+### GUI-Modus
 
 ```bash
 # Tipels starten
@@ -129,7 +153,7 @@ tipels
 
 Oder über das Anwendungsmenü: **System → Einstellungen → Tipels**
 
-### CLI
+### CLI-Modus
 
 ```bash
 # Hardware scannen
@@ -156,109 +180,137 @@ sudo tipels restore ~/tipels-backup.tipels-backup
 
 ---
 
-## Dokumentation
+## 📚 Dokumentation
 
-- 📖 [Benutzer-Handbuch (Deutsch)](docs/user-manual/de/README.md)
-- 📖 [User Manual (English)](docs/user-manual/en/README.md)
-- 🔧 [Entwickler-Dokumentation](docs/developer/README.md)
-- ❓ [Troubleshooting](docs/troubleshooting/README.md)
-- 📝 [Changelog](CHANGELOG.md)
-
----
-
-## Systemanforderungen
-
-- **Betriebssystem**: Ubuntu 20.04+, Debian 11+, Linux Mint 20+
-- **Python**: 3.10 oder höher
-- **Desktop**: GTK-basierte Umgebung (GNOME, Cinnamon, XFCE, MATE)
-- **Abhängigkeiten**: CUPS, SANE, Avahi (werden automatisch installiert)
+- 📖 **[Benutzer-Handbuch (Deutsch)](docs/user-manual/de/README.md)**
+- 📖 **[User Manual (English)](docs/user-manual/en/README.md)**
+- 🔧 **[Entwickler-Dokumentation](docs/developer/README.md)**
+- ❓ **[Troubleshooting](docs/troubleshooting/README.md)**
+- 📝 **[Changelog](CHANGELOG.md)**
+- 📋 **[Implementierungsplan](IMPLEMENTIERUNGSPLAN.md)**
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
-Beiträge sind herzlich willkommen! Siehe [CONTRIBUTING.md](CONTRIBUTING.md) für Details.
+Beiträge sind herzlich willkommen! Siehe **[CONTRIBUTING.md](CONTRIBUTING.md)** für Details.
 
 ### Wie kann ich helfen?
 
-- 🐛 Bugs melden
-- 💡 Feature-Ideen einreichen
-- 📝 Dokumentation verbessern
-- 🌍 Übersetzungen hinzufügen
-- 💻 Code beitragen
+- 🐛 **Bugs melden** - [GitHub Issues](https://github.com/nicolettas-muggelbude/Tipels/issues)
+- 💡 **Feature-Ideen** einreichen
+- 📝 **Dokumentation** verbessern
+- 🌍 **Übersetzungen** hinzufügen
+- 💻 **Code** beitragen
+- 🧪 **Testen** mit verschiedenen Hardware
 
 ### Entwicklung
 
 ```bash
 # Repository klonen
-git clone https://github.com/[username]/Tipels.git
+git clone https://github.com/nicolettas-muggelbude/Tipels.git
 cd Tipels
 
-# Development-Dependencies installieren
-pip install -r requirements-dev.txt
+# System-Dependencies & Development-Setup
+./install-system-deps.sh
+python3 -m venv venv
+source venv/bin/activate
+make install-dev
 
 # Tests ausführen
-pytest tests/
+make test
 
 # Code-Formatierung
-black src/ tests/
+make format
 
 # Linting
-pylint src/
+make lint
 ```
 
----
-
-## Lizenz
-
-Tipels ist freie Software, lizenziert unter der **GNU General Public License v3.0**.
-
-Siehe [LICENSE](LICENSE) für Details.
+**Test-Status:**
+- ✅ 29 Unit-Tests (alle bestehen)
+- ✅ 52% Code-Coverage
+- ✅ CI/CD mit GitHub Actions
 
 ---
 
-## Danksagungen
+## 🏗️ Entwicklungsstand
+
+**Aktuelle Version**: v0.1.0 (Alpha - In Entwicklung)
+
+### ✅ Implementiert
+- [x] Projekt-Struktur & Setup
+- [x] Logger-System (94% Coverage)
+- [x] Config-System (79% Coverage)
+- [x] CLI-Grundgerüst
+- [x] Unit-Tests
+- [x] CI/CD (GitHub Actions)
+- [x] Logo & Branding
+- [x] Dokumentation
+
+### 🚧 In Arbeit
+- [ ] Hardware-Detector (USB/Netzwerk)
+- [ ] Brother-Treiber-Modul
+- [ ] CUPS-Integration
+- [ ] SANE-Integration
+- [ ] GTK-GUI
+- [ ] PolicyKit-Integration
+- [ ] Backup/Restore-Funktion
+
+### 📅 Roadmap
+
+**v1.0** (Erstes Release)
+- Brother-Drucker & Scanner
+- USB & Netzwerk
+- GTK-GUI + CLI
+- Backup/Restore
+- .deb & Snap
+
+**v1.1**
+- Qt-GUI
+- AppImage & Flatpak
+- Weitere Distributionen (Fedora, Arch)
+
+**v2.0**
+- HP, Epson, Canon
+- Drucker-Monitoring
+- Firmware-Updates
+
+Siehe **[IMPLEMENTIERUNGSPLAN.md](IMPLEMENTIERUNGSPLAN.md)** für Details.
+
+---
+
+## 📄 Lizenz
+
+Tipels ist **freie Software**, lizenziert unter der **GNU General Public License v3.0**.
+
+Siehe **[LICENSE](LICENSE)** für Details.
+
+---
+
+## 🙏 Danksagungen
 
 - **Brother** - für Linux-Treiber-Unterstützung
 - **CUPS** - Common Unix Printing System
 - **SANE** - Scanner Access Now Easy
 - **PyGObject** - Python-GTK-Bindings
-- Alle Contributors und Tester
+- Alle zukünftigen Contributors und Tester
 
 ---
 
-## Support
+## 💬 Support
 
-- 🐛 **Bug-Reports**: [GitHub Issues](https://github.com/[username]/Tipels/issues)
-- 💬 **Diskussionen**: [GitHub Discussions](https://github.com/[username]/Tipels/discussions)
-- 📧 **E-Mail**: [support@tipels.org]
-
----
-
-## Roadmap
-
-### v1.0 (Aktuell)
-- [x] Brother-Drucker & Scanner
-- [x] USB & Netzwerk
-- [x] GTK-GUI
-- [x] CLI
-- [x] Backup/Restore
-- [x] .deb & Snap
-
-### v1.1 (Geplant)
-- [ ] Qt-GUI
-- [ ] AppImage & Flatpak
-- [ ] Weitere Distributionen (Fedora, Arch)
-
-### v2.0 (Zukunft)
-- [ ] HP-Geräte
-- [ ] Epson-Geräte
-- [ ] Canon-Geräte
-- [ ] Drucker-Monitoring
-- [ ] Firmware-Updates
+- 🐛 **Bug-Reports**: [GitHub Issues](https://github.com/nicolettas-muggelbude/Tipels/issues)
+- 💬 **Diskussionen**: [GitHub Discussions](https://github.com/nicolettas-muggelbude/Tipels/discussions)
+- 📖 **Dokumentation**: [docs/](docs/)
 
 ---
 
 <p align="center">
-  Gemacht mit ❤️ für die Linux-Community
+  <img src="data/icons/tipels-icon.svg" alt="Tipels" width="64"/>
+</p>
+
+<p align="center">
+  <strong>Gemacht mit ❤️ für die Linux-Community</strong><br>
+  <em>🐾 Kleine Schritte. Große Wirkung. 🐾</em>
 </p>
