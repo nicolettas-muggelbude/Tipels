@@ -3,8 +3,10 @@ Tests für Brother Driver-Installer
 """
 
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, mock_open
 import subprocess
+from pathlib import Path
+import tempfile
 
 from tipels.drivers.brother.installer import (
     DriverInstaller,
@@ -272,3 +274,114 @@ ii  brother-lpr-mfcl2700dn  3.5.1-1  amd64  Brother LPR Driver
 
         with pytest.raises(DriverInstallationError, match="zu lange gedauert"):
             installer.install_from_repository("printer-driver-brlaser", use_sudo=False)
+
+    @patch("requests.get")
+    @patch("builtins.open", new_callable=mock_open)
+    def test_download_deb_package_success(self, mock_file, mock_get, installer):
+        """Test: Erfolgreicher .deb-Download"""
+        # Mock HTTP Response
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.iter_content = lambda chunk_size: [b"data1", b"data2"]
+        mock_get.return_value = mock_response
+
+        url = "https://example.com/brother-lpr.deb"
+        result = installer.download_deb_package(url)
+
+        assert result.name == "brother-lpr.deb"
+        mock_get.assert_called_once()
+
+    @patch("requests.get")
+    def test_download_deb_package_failure(self, mock_get, installer):
+        """Test: Fehlgeschlagener Download"""
+        import requests
+        mock_get.side_effect = requests.RequestException("Connection error")
+
+        url = "https://example.com/brother-lpr.deb"
+
+        with pytest.raises(DriverInstallationError, match="Download fehlgeschlagen"):
+            installer.download_deb_package(url)
+
+    @patch("subprocess.run")
+    @patch("pathlib.Path.exists")
+    @patch("pathlib.Path.unlink")
+    def test_install_deb_package_success(
+        self, mock_unlink, mock_exists, mock_run, installer
+    ):
+        """Test: Erfolgreiche .deb-Installation"""
+        mock_exists.return_value = True
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_result.stdout = ""
+        mock_run.return_value = mock_result
+
+        deb_file = Path("/tmp/test.deb")
+        result = installer.install_deb_package(deb_file, use_sudo=False, cleanup=True)
+
+        assert result is True
+        mock_run.assert_called_once()
+        # Prüfe dpkg -i wurde aufgerufen
+        assert "dpkg" in mock_run.call_args[0][0]
+        assert "-i" in mock_run.call_args[0][0]
+
+        # Cleanup sollte aufgerufen worden sein
+        mock_unlink.assert_called_once()
+
+    @patch("subprocess.run")
+    @patch("pathlib.Path.exists")
+    def test_install_deb_package_not_found(self, mock_exists, mock_run, installer):
+        """Test: .deb-Datei nicht gefunden"""
+        mock_exists.return_value = False
+
+        deb_file = Path("/tmp/test.deb")
+
+        with pytest.raises(DriverInstallationError, match="nicht gefunden"):
+            installer.install_deb_package(deb_file, use_sudo=False)
+
+    @patch("subprocess.run")
+    @patch("pathlib.Path.exists")
+    def test_install_deb_package_dependency_fix(
+        self, mock_exists, mock_run, installer
+    ):
+        """Test: Abhängigkeiten automatisch reparieren"""
+        mock_exists.return_value = True
+
+        # Erster Call: dpkg -i (Abhängigkeitsfehler)
+        # Zweiter Call: apt-get -f install (erfolgreich)
+        mock_results = [
+            MagicMock(
+                returncode=1,
+                stdout="",
+                stderr="dpkg: dependency problems prevent configuration",
+            ),
+            MagicMock(returncode=0, stdout="", stderr=""),  # apt-get -f install
+        ]
+        mock_run.side_effect = mock_results
+
+        deb_file = Path("/tmp/test.deb")
+        result = installer.install_deb_package(deb_file, use_sudo=False, cleanup=False)
+
+        assert result is True
+        assert mock_run.call_count == 2
+
+        # Zweiter Call sollte apt-get -f install sein
+        fix_call = mock_run.call_args_list[1]
+        assert "apt-get" in fix_call[0][0]
+        assert "-f" in fix_call[0][0]
+        assert "install" in fix_call[0][0]
+
+    @patch("tipels.drivers.brother.installer.DriverInstaller.download_deb_package")
+    @patch("tipels.drivers.brother.installer.DriverInstaller.install_deb_package")
+    def test_install_from_url_success(
+        self, mock_install, mock_download, installer
+    ):
+        """Test: Installation von URL"""
+        mock_download.return_value = Path("/tmp/test.deb")
+        mock_install.return_value = True
+
+        url = "https://example.com/brother-lpr.deb"
+        result = installer.install_from_url(url, use_sudo=False)
+
+        assert result is True
+        mock_download.assert_called_once_with(url)
+        mock_install.assert_called_once()

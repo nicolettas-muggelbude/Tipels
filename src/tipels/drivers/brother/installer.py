@@ -6,8 +6,11 @@ Installiert und verwaltet Brother-Drucker- und Scanner-Treiber
 
 import subprocess
 import re
+import tempfile
+import requests
 from typing import Optional, List, Tuple
 from pathlib import Path
+from urllib.parse import urlparse
 
 from tipels.core.logger import TipelsLogger
 from tipels.drivers.brother.driver_db import (
@@ -191,6 +194,185 @@ class DriverInstaller:
             self.logger.error(f"Fehler bei apt-get update: {e}")
             return False
 
+    def download_deb_package(self, url: str, target_dir: Optional[Path] = None) -> Path:
+        """
+        Lädt ein .deb-Paket von einer URL herunter
+
+        Args:
+            url: URL zum .deb-Paket
+            target_dir: Ziel-Verzeichnis (optional, Standard: temp)
+
+        Returns:
+            Path: Pfad zur heruntergeladenen Datei
+
+        Raises:
+            DriverInstallationError: Bei Download-Fehler
+        """
+        self.logger.info(f"Lade .deb-Paket herunter: {url}")
+
+        # Extrahiere Dateinamen aus URL
+        parsed_url = urlparse(url)
+        filename = Path(parsed_url.path).name
+
+        if not filename.endswith(".deb"):
+            filename += ".deb"
+
+        # Ziel-Verzeichnis
+        if target_dir is None:
+            target_dir = Path(tempfile.gettempdir())
+        else:
+            target_dir = Path(target_dir)
+
+        target_file = target_dir / filename
+
+        try:
+            # Download mit requests
+            response = requests.get(url, timeout=120, stream=True)
+            response.raise_for_status()
+
+            # Schreibe Datei
+            with open(target_file, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+
+            self.logger.info(f".deb-Paket heruntergeladen: {target_file}")
+            return target_file
+
+        except requests.RequestException as e:
+            error_msg = f"Download fehlgeschlagen: {e}"
+            self.logger.error(error_msg)
+            raise DriverInstallationError(error_msg)
+        except OSError as e:
+            error_msg = f"Fehler beim Schreiben der Datei: {e}"
+            self.logger.error(error_msg)
+            raise DriverInstallationError(error_msg)
+
+    def install_deb_package(
+        self, deb_file: Path, use_sudo: bool = True, cleanup: bool = True
+    ) -> bool:
+        """
+        Installiert ein .deb-Paket via dpkg
+
+        Args:
+            deb_file: Pfad zum .deb-Paket
+            use_sudo: Verwende sudo (Standard: True)
+            cleanup: Lösche .deb nach Installation (Standard: True)
+
+        Returns:
+            bool: True bei Erfolg
+
+        Raises:
+            DriverInstallationError: Bei Installationsfehler
+        """
+        if not deb_file.exists():
+            error_msg = f".deb-Datei nicht gefunden: {deb_file}"
+            self.logger.error(error_msg)
+            raise DriverInstallationError(error_msg)
+
+        self.logger.info(f"Installiere .deb-Paket: {deb_file}")
+
+        # dpkg -i ausführen
+        cmd = ["dpkg", "-i", str(deb_file)]
+        if use_sudo:
+            cmd = ["sudo"] + cmd
+
+        try:
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=120,
+                check=False,
+            )
+
+            if result.returncode == 0:
+                self.logger.info(f".deb-Paket erfolgreich installiert: {deb_file}")
+
+                # Cleanup
+                if cleanup:
+                    try:
+                        deb_file.unlink()
+                        self.logger.info(f".deb-Datei gelöscht: {deb_file}")
+                    except OSError as e:
+                        self.logger.warning(f"Cleanup fehlgeschlagen: {e}")
+
+                return True
+            else:
+                # dpkg kann Abhängigkeitsfehler haben
+                # Versuche apt-get -f install
+                if "dependency problems" in result.stderr.lower():
+                    self.logger.warning(
+                        "Abhängigkeitsprobleme erkannt. Versuche apt-get -f install..."
+                    )
+                    fix_result = self._fix_dependencies(use_sudo)
+                    if fix_result:
+                        self.logger.info("Abhängigkeiten erfolgreich repariert")
+                        return True
+
+                error_msg = f"dpkg Installation fehlgeschlagen: {result.stderr}"
+                self.logger.error(error_msg)
+                raise DriverInstallationError(error_msg)
+
+        except subprocess.TimeoutExpired:
+            error_msg = f"Installation von '{deb_file}' hat zu lange gedauert"
+            self.logger.error(error_msg)
+            raise DriverInstallationError(error_msg)
+        except FileNotFoundError:
+            error_msg = "dpkg nicht gefunden. Ist dies ein Debian/Ubuntu-System?"
+            self.logger.error(error_msg)
+            raise DriverInstallationError(error_msg)
+
+    def _fix_dependencies(self, use_sudo: bool = True) -> bool:
+        """
+        Repariert Abhängigkeiten via apt-get -f install
+
+        Args:
+            use_sudo: Verwende sudo
+
+        Returns:
+            bool: True bei Erfolg
+        """
+        cmd = ["apt-get", "-f", "install", "-y"]
+        if use_sudo:
+            cmd = ["sudo"] + cmd
+
+        try:
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=300,
+                check=False,
+            )
+
+            return result.returncode == 0
+
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            return False
+
+    def install_from_url(
+        self, url: str, use_sudo: bool = True, cleanup: bool = True
+    ) -> bool:
+        """
+        Lädt .deb-Paket herunter und installiert es
+
+        Args:
+            url: URL zum .deb-Paket
+            use_sudo: Verwende sudo (Standard: True)
+            cleanup: Lösche .deb nach Installation (Standard: True)
+
+        Returns:
+            bool: True bei Erfolg
+
+        Raises:
+            DriverInstallationError: Bei Fehler
+        """
+        # Download
+        deb_file = self.download_deb_package(url)
+
+        # Installation
+        return self.install_deb_package(deb_file, use_sudo=use_sudo, cleanup=cleanup)
+
     def install_driver_for_model(
         self,
         model: str,
@@ -237,13 +419,24 @@ class DriverInstaller:
             )
             if success:
                 installed_packages.append(driver_info.package_name)
-        else:
-            # TODO: Brother-Website-Download implementieren
-            error_msg = (
-                f"Download von Brother-Website noch nicht implementiert. "
-                f"Bitte installiere '{driver_name}' manuell von: {driver_info.download_url}"
+        elif driver_info.source == DriverSource.BROTHER_WEBSITE:
+            # Download und Installation von Brother-Website
+            if not driver_info.download_url:
+                error_msg = f"Keine Download-URL für '{driver_name}' hinterlegt"
+                self.logger.error(error_msg)
+                raise DriverInstallationError(error_msg)
+
+            self.logger.info(
+                f"Lade offiziellen Brother-Treiber herunter: {driver_info.download_url}"
             )
-            self.logger.warning(error_msg)
+            success = self.install_from_url(
+                driver_info.download_url, use_sudo=use_sudo, cleanup=True
+            )
+            if success:
+                installed_packages.append(driver_info.name)
+        else:
+            error_msg = f"Unbekannte Treiber-Quelle: {driver_info.source}"
+            self.logger.error(error_msg)
             raise DriverInstallationError(error_msg)
 
         # Scanner-Treiber (falls Multifunktionsgerät)
