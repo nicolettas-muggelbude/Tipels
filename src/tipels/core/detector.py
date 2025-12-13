@@ -13,6 +13,22 @@ from tipels.core.device import Device, DeviceType, ConnectionType, DeviceStatus
 from tipels.core.logger import TipelsLogger
 
 
+# GitHub Issue-Template URL für Hardware-Support-Anfragen
+HARDWARE_SUPPORT_URL = "https://github.com/nicolettas-muggelbude/Tipels/issues/new?template=hardware_support.yml"
+
+# USB Vendor IDs bekannter Drucker-Hersteller
+USB_VENDORS = {
+    "04f9": "Brother",  # Unterstützt
+    "03f0": "HP",  # Noch nicht unterstützt
+    "04a9": "Canon",  # Noch nicht unterstützt
+    "04b8": "Epson",  # Noch nicht unterstützt
+    "0924": "Xerox",  # Noch nicht unterstützt
+    "0525": "Lexmark",  # Noch nicht unterstützt
+    "413c": "Dell",  # Noch nicht unterstützt
+    "0482": "Kyocera",  # Noch nicht unterstützt
+}
+
+
 class HardwareDetector:
     """Hardware-Detector für Drucker und Scanner"""
 
@@ -194,19 +210,57 @@ class HardwareDetector:
 
         manufacturer = None
         model = None
+        supported = False  # Default: nicht unterstützt
 
         service_lower = service_name.lower()
 
-        # Erkenne Brother
+        # Erkenne Brother (UNTERSTÜTZT)
         if "brother" in service_lower:
             manufacturer = "Brother"
             # Extrahiere Modell (z.B. "MFC-L2700DN")
             match = re.search(r"(MFC-[A-Z0-9]+|DCP-[A-Z0-9]+|HL-[A-Z0-9]+)", service_name, re.IGNORECASE)
             if match:
                 model = match.group(1).upper()
+                supported = True
 
-        # Weitere Hersteller können hier hinzugefügt werden
-        # TODO: HP, Canon, Epson, etc.
+        # HP (NOCH NICHT UNTERSTÜTZT)
+        elif "hp" in service_lower or "hewlett" in service_lower:
+            manufacturer = "HP"
+            # Extrahiere Modell (z.B. "LaserJet Pro M404dn")
+            match = re.search(r"(LaserJet|OfficeJet|DeskJet|Envy|PageWide)\s+[A-Za-z0-9\s-]+", service_name, re.IGNORECASE)
+            if match:
+                model = match.group(0).strip()
+                supported = False
+
+        # Canon (NOCH NICHT UNTERSTÜTZT)
+        elif "canon" in service_lower:
+            manufacturer = "Canon"
+            # Extrahiere Modell (z.B. "PIXMA TR4500")
+            match = re.search(r"(PIXMA|imageCLASS|imageRUNNER|MAXIFY)\s+[A-Z0-9-]+", service_name, re.IGNORECASE)
+            if match:
+                model = match.group(0).strip()
+                supported = False
+
+        # Epson (NOCH NICHT UNTERSTÜTZT)
+        elif "epson" in service_lower:
+            manufacturer = "Epson"
+            # Extrahiere Modell (z.B. "WorkForce WF-2830")
+            match = re.search(r"(WorkForce|EcoTank|Expression|SureColor)\s+[A-Z0-9-]+", service_name, re.IGNORECASE)
+            if match:
+                model = match.group(0).strip()
+                supported = False
+
+        # Xerox (NOCH NICHT UNTERSTÜTZT)
+        elif "xerox" in service_lower:
+            manufacturer = "Xerox"
+            model = service_name.replace("Xerox", "").strip()
+            supported = False
+
+        # Lexmark (NOCH NICHT UNTERSTÜTZT)
+        elif "lexmark" in service_lower:
+            manufacturer = "Lexmark"
+            model = service_name.replace("Lexmark", "").strip()
+            supported = False
 
         if not manufacturer or not model:
             self.logger.warning(f"Unbekanntes Netzwerk-Gerät: {service_name}")
@@ -233,10 +287,19 @@ class HardwareDetector:
             ip_address=ip_address,
             hostname=hostname,
             status=DeviceStatus.DETECTED,
+            supported=supported,
+            support_url=HARDWARE_SUPPORT_URL if not supported else None,
             driver_installed=False,
         )
 
-        self.logger.info(f"Netzwerk-Gerät erkannt: {device}")
+        if supported:
+            self.logger.info(f"Netzwerk-Gerät erkannt: {device}")
+        else:
+            self.logger.warning(
+                f"Nicht unterstütztes Netzwerk-Gerät erkannt: {device} - "
+                f"Feature-Request unter: {HARDWARE_SUPPORT_URL}"
+            )
+
         return device
 
     def _identify_usb_device(
@@ -253,16 +316,86 @@ class HardwareDetector:
         Returns:
             Optional[Device]: Device-Objekt oder None
         """
-        # Brother Vendor ID: 04f9
-        if vendor_id.lower() == "04f9":
+        vendor_id_lower = vendor_id.lower()
+
+        # Brother Vendor ID: 04f9 (UNTERSTÜTZT)
+        if vendor_id_lower == "04f9":
             return self._identify_brother_device(
                 vendor_id, product_id, description
             )
 
-        # Weitere Hersteller können hier hinzugefügt werden
-        # TODO: HP, Canon, Epson, etc.
+        # Andere bekannte Hersteller (NOCH NICHT UNTERSTÜTZT)
+        if vendor_id_lower in USB_VENDORS:
+            return self._identify_generic_device(
+                vendor_id, product_id, description, supported=False
+            )
 
         return None
+
+    def _identify_generic_device(
+        self,
+        vendor_id: str,
+        product_id: str,
+        description: str,
+        supported: bool = False,
+    ) -> Optional[Device]:
+        """
+        Identifiziert ein generisches Gerät (noch nicht unterstützt)
+
+        Args:
+            vendor_id: USB Vendor ID
+            product_id: USB Product ID
+            description: Geräte-Beschreibung
+            supported: Ob das Gerät unterstützt wird
+
+        Returns:
+            Optional[Device]: Device-Objekt oder None
+        """
+        vendor_id_lower = vendor_id.lower()
+        manufacturer = USB_VENDORS.get(vendor_id_lower, "Unbekannt")
+
+        # Versuche Modell aus Beschreibung zu extrahieren
+        # Format: "Vendor_Name Model_Name"
+        model = "Unbekanntes Modell"
+        if manufacturer in description:
+            # Extrahiere alles nach dem Herstellernamen
+            parts = description.split(manufacturer, 1)
+            if len(parts) > 1:
+                model = parts[1].strip()
+                # Bereinige Kommas und extra Whitespace
+                model = model.split(",")[0].strip()
+
+        if not model or model == "Unbekanntes Modell":
+            model = f"{vendor_id}:{product_id}"
+
+        # Annahme: Wenn es ein Drucker-Hersteller ist, ist es wahrscheinlich ein Multifunktionsgerät
+        device_type = DeviceType.MULTIFUNCTION
+
+        connection_uri = f"usb://{manufacturer}/{model}?serial=unknown"
+
+        device = Device(
+            manufacturer=manufacturer,
+            model=model,
+            device_type=device_type,
+            connection_type=ConnectionType.USB,
+            connection_uri=connection_uri,
+            vendor_id=vendor_id,
+            product_id=product_id,
+            status=DeviceStatus.DETECTED,
+            supported=supported,
+            support_url=HARDWARE_SUPPORT_URL if not supported else None,
+            driver_installed=False,
+        )
+
+        if supported:
+            self.logger.info(f"Gerät erkannt: {device}")
+        else:
+            self.logger.warning(
+                f"Nicht unterstütztes Gerät erkannt: {device} - "
+                f"Feature-Request unter: {HARDWARE_SUPPORT_URL}"
+            )
+
+        return device
 
     def _identify_brother_device(
         self, vendor_id: str, product_id: str, description: str

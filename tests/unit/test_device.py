@@ -35,6 +35,8 @@ class TestDevice:
         assert device.vendor_id == "04f9"
         assert device.product_id == "0273"
         assert device.status == DeviceStatus.DETECTED
+        assert device.supported is True  # Default
+        assert device.support_url is None
 
     def test_device_str(self):
         """Test: Device String-Repräsentation"""
@@ -183,6 +185,25 @@ class TestDevice:
         )
 
         assert multifunction.is_scanner() is True
+
+    def test_unsupported_device(self):
+        """Test: Nicht unterstütztes Gerät"""
+        device = Device(
+            manufacturer="HP",
+            model="LaserJet Pro M404dn",
+            device_type=DeviceType.PRINTER,
+            connection_type=ConnectionType.USB,
+            connection_uri="usb://HP/LaserJet",
+            vendor_id="03f0",
+            product_id="1234",
+            supported=False,
+            support_url="https://github.com/nicolettas-muggelbude/Tipels/issues/new?template=hardware_support.yml",
+        )
+
+        assert device.supported is False
+        assert device.support_url is not None
+        assert "github.com" in device.support_url
+        assert "hardware_support" in device.support_url
 
 
 class TestPrinter:

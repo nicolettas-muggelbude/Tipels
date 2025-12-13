@@ -18,11 +18,27 @@ Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
 Bus 002 Device 002: ID 04f9:0366 Brother Industries, Ltd MFC-L3770CDW
 """
 
+# Mock lsusb Ausgabe mit nicht-Brother-Geräten
+MOCK_LSUSB_WITH_HP = """Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 001 Device 002: ID 04f9:0273 Brother Industries, Ltd MFC-L2700DN
+Bus 001 Device 003: ID 03f0:1234 HP LaserJet Pro M404dn
+Bus 002 Device 001: ID 04a9:5678 Canon PIXMA TR4500
+"""
+
 # Mock avahi-browse Ausgabe (parsable format)
 MOCK_AVAHI_OUTPUT = """+;eth0;IPv4;Brother MFC-L2700DN series;_printer._tcp;local
 =;eth0;IPv4;Brother MFC-L2700DN series;_printer._tcp;local;BRN001BA9123456.local;192.168.1.100;9100;
 +;eth0;IPv4;Brother MFC-L2700DN series;_ipp._tcp;local
 =;eth0;IPv4;Brother MFC-L2700DN series;_ipp._tcp;local;BRN001BA9123456.local;192.168.1.100;631;
+"""
+
+# Mock avahi-browse Ausgabe mit nicht-Brother-Geräten
+MOCK_AVAHI_WITH_HP = """+;eth0;IPv4;Brother MFC-L2700DN series;_printer._tcp;local
+=;eth0;IPv4;Brother MFC-L2700DN series;_printer._tcp;local;BRN001BA9123456.local;192.168.1.100;9100;
++;eth0;IPv4;HP LaserJet Pro M404dn;_ipp._tcp;local
+=;eth0;IPv4;HP LaserJet Pro M404dn;_ipp._tcp;local;HP123456.local;192.168.1.101;631;
++;eth0;IPv4;Canon PIXMA TR4500 series;_ipp._tcp;local
+=;eth0;IPv4;Canon PIXMA TR4500 series;_ipp._tcp;local;Canon789.local;192.168.1.102;631;
 """
 
 
@@ -144,13 +160,25 @@ class TestHardwareDetector:
         assert len(devices) == 0
 
     def test_identify_unknown_usb_vendor(self, detector_with_mocks):
-        """Test: Unbekannter USB-Hersteller"""
+        """Test: Unbekannter USB-Hersteller (komplett unbekannt)"""
         detector, _, _ = detector_with_mocks
 
-        # HP Vendor ID (nicht implementiert)
-        device = detector._identify_usb_device("03f0", "1234", "HP LaserJet")
+        # Komplett unbekannte Vendor ID
+        device = detector._identify_usb_device("9999", "1234", "Unknown Printer")
 
         assert device is None
+
+    def test_identify_hp_usb_device_unsupported(self, detector_with_mocks):
+        """Test: HP-Gerät wird als nicht unterstützt erkannt"""
+        detector, _, _ = detector_with_mocks
+
+        # HP Vendor ID (noch nicht unterstützt, wird aber erkannt)
+        device = detector._identify_usb_device("03f0", "1234", "HP LaserJet")
+
+        assert device is not None
+        assert device.manufacturer == "HP"
+        assert device.supported is False
+        assert device.support_url is not None
 
     def test_identify_unknown_brother_product(self, detector_with_mocks):
         """Test: Unbekanntes Brother-Produkt"""
@@ -300,3 +328,92 @@ class TestHardwareDetector:
 
         assert device is not None
         assert device.connection_uri == "socket://192.168.1.100:9100"
+
+    def test_scan_usb_with_unsupported_devices(self, mock_logger):
+        """Test: USB-Scan mit nicht unterstützten Geräten"""
+        mock_lsusb = MagicMock(return_value=MOCK_LSUSB_WITH_HP)
+        detector = HardwareDetector(logger=mock_logger, lsusb_command=mock_lsusb)
+
+        devices = detector.scan_usb()
+
+        # 1 Brother (unterstützt) + 1 HP + 1 Canon (nicht unterstützt) = 3 Geräte
+        assert len(devices) == 3
+
+        # Brother sollte unterstützt sein
+        brother_device = next((d for d in devices if d.manufacturer == "Brother"), None)
+        assert brother_device is not None
+        assert brother_device.supported is True
+        assert brother_device.support_url is None
+
+        # HP sollte nicht unterstützt sein
+        hp_device = next((d for d in devices if d.manufacturer == "HP"), None)
+        assert hp_device is not None
+        assert hp_device.supported is False
+        assert hp_device.support_url is not None
+        assert "hardware_support" in hp_device.support_url
+
+        # Canon sollte nicht unterstützt sein
+        canon_device = next((d for d in devices if d.manufacturer == "Canon"), None)
+        assert canon_device is not None
+        assert canon_device.supported is False
+        assert canon_device.support_url is not None
+
+    def test_scan_network_with_unsupported_devices(self, mock_logger):
+        """Test: Netzwerk-Scan mit nicht unterstützten Geräten"""
+        mock_avahi = MagicMock(return_value=MOCK_AVAHI_WITH_HP)
+        detector = HardwareDetector(logger=mock_logger, avahi_command=mock_avahi)
+
+        devices = detector.scan_network()
+
+        # 1 Brother + 1 HP + 1 Canon = 3 Geräte
+        assert len(devices) == 3
+
+        # Brother sollte unterstützt sein
+        brother_devices = [d for d in devices if d.manufacturer == "Brother"]
+        assert len(brother_devices) == 1
+        assert brother_devices[0].supported is True
+
+        # HP sollte nicht unterstützt sein
+        hp_devices = [d for d in devices if d.manufacturer == "HP"]
+        assert len(hp_devices) == 1
+        assert hp_devices[0].supported is False
+        assert hp_devices[0].model == "LaserJet Pro M404dn"
+
+        # Canon sollte nicht unterstützt sein
+        canon_devices = [d for d in devices if d.manufacturer == "Canon"]
+        assert len(canon_devices) == 1
+        assert canon_devices[0].supported is False
+        assert canon_devices[0].model == "PIXMA TR4500"
+
+    def test_identify_generic_hp_device(self, mock_logger):
+        """Test: HP-Gerät als generisches Gerät erkennen"""
+        detector = HardwareDetector(logger=mock_logger)
+
+        device = detector._identify_generic_device(
+            vendor_id="03f0",
+            product_id="1234",
+            description="HP LaserJet Pro M404dn",
+            supported=False,
+        )
+
+        assert device is not None
+        assert device.manufacturer == "HP"
+        assert "LaserJet Pro M404dn" in device.model
+        assert device.supported is False
+        assert device.support_url is not None
+
+    def test_identify_generic_canon_device(self, mock_logger):
+        """Test: Canon-Gerät als generisches Gerät erkennen"""
+        detector = HardwareDetector(logger=mock_logger)
+
+        device = detector._identify_generic_device(
+            vendor_id="04a9",
+            product_id="5678",
+            description="Canon PIXMA TR4500",
+            supported=False,
+        )
+
+        assert device is not None
+        assert device.manufacturer == "Canon"
+        assert "PIXMA TR4500" in device.model
+        assert device.supported is False

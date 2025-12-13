@@ -57,6 +57,10 @@ class Device:
     # Status
     status: DeviceStatus = DeviceStatus.DETECTED
 
+    # Unterstützung
+    supported: bool = True  # Von Tipels unterstützt?
+    support_url: Optional[str] = None  # URL zum Request-Feature wenn nicht unterstützt
+
     # Treiber-Informationen
     driver_installed: bool = False
     driver_name: Optional[str] = None
