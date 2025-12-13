@@ -51,4 +51,7 @@
         fill="#3F51B5">
     Tipels
   </text>
+
+  <!-- Rahmen um das Logo -->
+  <rect width="256" height="256" fill="none" stroke="#3F51B5" stroke-width="3" rx="8" opacity="0.4"/>
 </svg>
