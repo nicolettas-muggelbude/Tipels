@@ -32,9 +32,10 @@ Tipels ist eine Linux-Applikation zur vereinfachten Einrichtung von Druckern und
    - Manuelle IP-Eingabe für Poweruser
 
 2. **Treiberinstallation**
-   - Ubuntu-Repositories (primär)
-   - Brother-Website (automatischer Download)
-   - Open-Source-Alternativen (brlaser, etc.)
+   - **OpenPrinting-First Strategie**: Foomatic-DB (primär, ~10.000+ Drucker)
+   - Ubuntu-Repositories (OpenPrinting-Treiber: brlaser, hplip, gutenprint)
+   - Brother-Website (automatischer Download als Fallback)
+   - Intelligentes Caching erkannter Drucker
    - Automatische Installation von Abhängigkeiten
 
 3. **Multi-Geräte-Verwaltung**
@@ -58,6 +59,47 @@ Tipels ist eine Linux-Applikation zur vereinfachten Einrichtung von Druckern und
    - Anonymisierte Logs für Support
 
 ## Technische Entscheidungen
+
+### Treiberarchitektur
+
+#### OpenPrinting-First Strategie
+Tipels nutzt eine dreistufige Treiberarchitektur:
+
+1. **Foomatic-DB (Primär, alle Hersteller)**
+   - Integration mit CUPS via `lpinfo -m`
+   - Zugriff auf ~10.000+ Drucker-PPD-Dateien
+   - Automatische Erkennung für Brother, HP, Canon, Epson, Xerox, Lexmark, etc.
+   - Treiber-Priorität: brlaser (10) > hplip (9) > gutenprint (8) > postscript (7)
+   - In-Memory + Persistenter Cache für schnellen Zugriff
+
+2. **Tipels Printer Cache**
+   - JSON-basierte Datenbank erkannter Drucker
+   - Speicherort: `~/.local/share/tipels/printer_cache.json`
+   - Speichert: OpenPrinting-Treiber, Official-Treiber, PPD-Namen, last_used
+   - Case-insensitive Schlüssel (manufacturer:model)
+
+3. **Herstellerspezifische Treiber (Fallback)**
+   - Brother Official Drivers (.deb Download von Brother-Website)
+   - Nur wenn Foomatic keinen Treiber findet ODER User explizit wünscht
+   - Nützlich für spezielle Features (Fax, erweiterte Funktionen)
+   - Modellspezifische Download-URLs in driver_db.py
+
+#### Implementierte Module
+- `tipels.core.foomatic`: FoomaticDetector, lpinfo-Parser, Treiber-Matching
+- `tipels.core.printer_cache`: PrinterCache, JSON-Persistenz
+- `tipels.drivers.brother.installer`: DriverInstaller mit Foomatic-Integration
+- `tipels.drivers.brother.scanner`: BrotherScannerManager, SANE/brscan4-Integration
+
+#### Scanner-Integration (SANE)
+Brother-Scanner werden über SANE (Scanner Access Now Easy) verwaltet:
+
+1. **brscan4-Treiber**: Brother Scanner Driver für SANE
+2. **Scanner-Registrierung**: Via `brsaneconfig4`
+   - USB: `brsaneconfig4 -a name=Brother model=MFC-L2700DN nodename=/dev/usb/lp0`
+   - Netzwerk: `brsaneconfig4 -a name=Brother model=MFC-L2700DN ip=192.168.1.100`
+3. **Gruppenverwaltung**: Automatisches Hinzufügen zu scanner, saned, lp
+4. **Test-Scan**: Via `scanimage` für Funktionstest
+5. **Scanner-Status**: Systemprüfung (brscan4, SANE, Gruppen)
 
 ### Architektur
 - **Modularer Aufbau**: Plugin-System für Hersteller
@@ -121,14 +163,23 @@ Tipels ist eine Linux-Applikation zur vereinfachten Einrichtung von Druckern und
 - [x] GitHub-Repository-Struktur lokal
 - [x] Logger-System (94% Coverage)
 - [x] Config-System (79% Coverage)
-- [x] Unit-Tests (29 Tests, 52% Coverage)
+- [x] Hardware-Erkennung (USB + Netzwerk)
+- [x] Device-Klassen (Printer, Scanner, MFP)
+- [x] Brother Treiber-Datenbank (OpenPrinting + Official)
+- [x] **Foomatic-Integration** (lpinfo-Parser, Treiber-Matching)
+- [x] **Printer Cache** (JSON-basiert, persistent)
+- [x] **DriverInstaller** (Repository + Brother-Website-Download)
+- [x] **OpenPrinting-First Strategie** (Foomatic → Brother Official Fallback)
+- [x] **Brother Scanner-Manager** (SANE/brscan4-Integration)
+- [x] **Scanner-Konfiguration** (USB + Netzwerk, brsaneconfig4)
+- [x] **Benutzer-Gruppenverwaltung** (scanner, saned, lp)
+- [x] Unit-Tests (155 Tests, 76% Coverage)
 - [x] CI/CD (GitHub Actions)
 - [x] Logo & Branding
 - [x] README.md aktualisiert
 - [ ] GitHub-Repository online erstellen
-- [ ] Prototyp (USB+Netzwerk, Drucker+Scanner)
-- [ ] Treiberlogik
-- [ ] CUPS/SANE-Integration
+- [ ] CUPS-Integration (Drucker registrieren)
+- [ ] SANE-Integration (Scanner registrieren)
 - [ ] GUI-Entwicklung (GTK)
 - [ ] CLI-Interface (funktionsfähig)
 - [ ] PolicyKit-Integration

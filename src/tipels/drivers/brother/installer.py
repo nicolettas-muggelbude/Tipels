@@ -13,6 +13,8 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from tipels.core.logger import TipelsLogger
+from tipels.core.foomatic import FoomaticDetector, FoomaticDriver
+from tipels.core.printer_cache import PrinterCache
 from tipels.drivers.brother.driver_db import (
     get_driver_info,
     get_recommended_driver,
@@ -30,14 +32,30 @@ class DriverInstallationError(Exception):
 class DriverInstaller:
     """Installiert und verwaltet Brother-Treiber"""
 
-    def __init__(self, logger: Optional[TipelsLogger] = None):
+    def __init__(
+        self,
+        logger: Optional[TipelsLogger] = None,
+        use_foomatic: bool = True,
+        cache_file: Optional[Path] = None,
+    ):
         """
         Initialisiert den Driver-Installer
 
         Args:
             logger: Logger-Instanz (optional)
+            use_foomatic: Nutze Foomatic-DB für Treiber-Erkennung (Standard: True)
+            cache_file: Pfad zur Cache-Datei (optional)
         """
         self.logger = logger or TipelsLogger("tipels.driver.installer")
+        self.use_foomatic = use_foomatic
+
+        # Foomatic-Integration
+        if use_foomatic:
+            self.foomatic = FoomaticDetector(logger=self.logger)
+            self.cache = PrinterCache(cache_file=cache_file, logger=self.logger)
+        else:
+            self.foomatic = None
+            self.cache = None
 
     def is_driver_installed(self, package_name: str) -> bool:
         """
@@ -373,9 +391,68 @@ class DriverInstaller:
         # Installation
         return self.install_deb_package(deb_file, use_sudo=use_sudo, cleanup=cleanup)
 
+    def find_driver_with_foomatic(
+        self, manufacturer: str, model: str
+    ) -> Optional[FoomaticDriver]:
+        """
+        Findet Treiber über Foomatic-DB
+
+        Args:
+            manufacturer: Hersteller (z.B. "Brother", "HP", "Canon")
+            model: Modell (z.B. "MFC-L2700DN", "LaserJet Pro M404dn")
+
+        Returns:
+            Optional[FoomaticDriver]: Empfohlener Treiber oder None
+        """
+        if not self.use_foomatic or not self.foomatic:
+            self.logger.warning("Foomatic-Integration ist deaktiviert")
+            return None
+
+        # Prüfe Cache
+        if self.cache:
+            cached = self.cache.get(manufacturer, model)
+            if cached and cached.get("ppd_name"):
+                self.logger.info(
+                    f"Treiber für {manufacturer} {model} aus Cache: "
+                    f"{cached.get('openprinting_driver')}"
+                )
+                # Erstelle FoomaticDriver aus Cache
+                return FoomaticDriver(
+                    ppd_name=cached["ppd_name"],
+                    driver=cached.get("openprinting_driver", "unknown"),
+                    manufacturer=manufacturer,
+                    model=model,
+                    description=cached.get("description", ""),
+                )
+
+        # Nicht im Cache: Frage Foomatic
+        self.logger.info(f"Suche Treiber für {manufacturer} {model} via Foomatic...")
+        recommended = self.foomatic.get_recommended_driver(manufacturer, model)
+
+        if recommended:
+            # Speichere im Cache
+            if self.cache:
+                self.cache.set(
+                    manufacturer=manufacturer,
+                    model=model,
+                    openprinting_driver=recommended.driver,
+                    ppd_name=recommended.ppd_name,
+                    description=recommended.description,
+                )
+
+            self.logger.info(
+                f"Foomatic-Treiber gefunden: {recommended.driver} "
+                f"({recommended.ppd_name})"
+            )
+            return recommended
+
+        self.logger.info(f"Kein Foomatic-Treiber für {manufacturer} {model} gefunden")
+        return None
+
     def install_driver_for_model(
         self,
         model: str,
+        manufacturer: str = "Brother",
         install_scanner: bool = True,
         prefer_opensource: bool = True,
         use_sudo: bool = True,
@@ -385,7 +462,8 @@ class DriverInstaller:
         Installiert den empfohlenen Treiber für ein Modell
 
         Args:
-            model: Brother-Modellname (z.B. "MFC-L2700DN")
+            model: Modellname (z.B. "MFC-L2700DN", "LaserJet Pro M404dn")
+            manufacturer: Hersteller (Standard: "Brother")
             install_scanner: Installiere auch Scanner-Treiber (Standard: True)
             prefer_opensource: Bevorzuge Open-Source-Treiber (Standard: True)
             use_sudo: Verwende sudo (Standard: True)
@@ -402,78 +480,130 @@ class DriverInstaller:
             DriverInstallationError: Bei Installationsfehler
         """
         self.logger.info(
-            f"Installiere Treiber für Modell: {model} "
+            f"Installiere Treiber für {manufacturer} {model} "
             f"(force_official={force_official})"
         )
 
         installed_packages = []
+        driver_name = None
+        driver_info = None
 
-        # Drucker-Treiber
-        if force_official:
-            # User möchte explizit Brother Official Driver
-            # Ignoriere prefer_opensource und nutze alternatives[0]
-            from tipels.drivers.brother.driver_db import MODEL_DRIVER_MAPPING
-
-            mapping = MODEL_DRIVER_MAPPING.get(model)
-            if not mapping or not mapping.get("alternatives"):
-                error_msg = f"Kein Brother Official Driver für Modell '{model}' hinterlegt"
-                self.logger.error(error_msg)
-                raise DriverInstallationError(error_msg)
-
-            driver_name = mapping["alternatives"][0]
-            self.logger.info(f"Verwende Brother Official Driver: {driver_name}")
-        else:
-            # Standard: Empfohlener Treiber (OpenPrinting bevorzugt)
-            driver_name = get_recommended_driver(model, prefer_opensource)
-        if not driver_name:
-            error_msg = f"Kein Treiber für Modell '{model}' gefunden"
-            self.logger.error(error_msg)
-            raise DriverInstallationError(error_msg)
-
-        driver_info = get_driver_info(driver_name)
-        if not driver_info:
-            error_msg = f"Treiber-Info für '{driver_name}' nicht gefunden"
-            self.logger.error(error_msg)
-            raise DriverInstallationError(error_msg)
-
-        # Installiere Drucker-Treiber
-        if driver_info.source == DriverSource.REPOSITORY:
-            success = self.install_from_repository(
-                driver_info.package_name, use_sudo=use_sudo
-            )
-            if success:
-                installed_packages.append(driver_info.package_name)
-        elif driver_info.source == DriverSource.BROTHER_WEBSITE:
-            # Download und Installation von Brother-Website
-            if not driver_info.download_url:
-                error_msg = f"Keine Download-URL für '{driver_name}' hinterlegt"
-                self.logger.error(error_msg)
-                raise DriverInstallationError(error_msg)
-
-            self.logger.info(
-                f"Lade offiziellen Brother-Treiber herunter: {driver_info.download_url}"
-            )
-            success = self.install_from_url(
-                driver_info.download_url, use_sudo=use_sudo, cleanup=True
-            )
-            if success:
-                installed_packages.append(driver_info.name)
-        else:
-            error_msg = f"Unbekannte Treiber-Quelle: {driver_info.source}"
-            self.logger.error(error_msg)
-            raise DriverInstallationError(error_msg)
-
-        # Scanner-Treiber (falls Multifunktionsgerät)
-        if install_scanner:
-            scanner_driver_name = get_scanner_driver(model)
-            if scanner_driver_name:
-                scanner_info = get_driver_info(scanner_driver_name)
-                if scanner_info and scanner_info.source == DriverSource.REPOSITORY:
+        # Strategie 1: Foomatic-DB (wenn aktiviert und nicht force_official)
+        if self.use_foomatic and not force_official:
+            foomatic_driver = self.find_driver_with_foomatic(manufacturer, model)
+            if foomatic_driver:
+                self.logger.info(
+                    f"Nutze Foomatic-Treiber: {foomatic_driver.driver} "
+                    f"(Package: printer-driver-{foomatic_driver.driver})"
+                )
+                # Versuche Repository-Installation
+                package_name = f"printer-driver-{foomatic_driver.driver}"
+                try:
                     success = self.install_from_repository(
-                        scanner_info.package_name, use_sudo=use_sudo
+                        package_name, use_sudo=use_sudo
                     )
                     if success:
-                        installed_packages.append(scanner_info.package_name)
+                        installed_packages.append(package_name)
+                        # Update Cache mit last_used
+                        if self.cache:
+                            self.cache.update(
+                                manufacturer=manufacturer,
+                                model=model,
+                                last_used=foomatic_driver.driver,
+                            )
+                except Exception as e:
+                    self.logger.warning(
+                        f"Foomatic-Treiber-Installation fehlgeschlagen: {e}. "
+                        "Versuche Fallback zu Brother Official..."
+                    )
+
+        # Strategie 2: Brother Official (Fallback oder force_official)
+        # Nur für Brother-Drucker verfügbar
+        if not installed_packages and manufacturer.lower() == "brother":
+            self.logger.info("Nutze Brother-spezifische Treiber-Datenbank...")
+
+            # Drucker-Treiber
+            if force_official:
+                # User möchte explizit Brother Official Driver
+                # Ignoriere prefer_opensource und nutze alternatives[0]
+                from tipels.drivers.brother.driver_db import MODEL_DRIVER_MAPPING
+
+                mapping = MODEL_DRIVER_MAPPING.get(model)
+                if not mapping or not mapping.get("alternatives"):
+                    error_msg = f"Kein Brother Official Driver für Modell '{model}' hinterlegt"
+                    self.logger.error(error_msg)
+                    raise DriverInstallationError(error_msg)
+
+                driver_name = mapping["alternatives"][0]
+                self.logger.info(f"Verwende Brother Official Driver: {driver_name}")
+            else:
+                # Standard: Empfohlener Treiber (OpenPrinting bevorzugt)
+                driver_name = get_recommended_driver(model, prefer_opensource)
+
+            if not driver_name:
+                error_msg = f"Kein Treiber für Modell '{model}' gefunden"
+                self.logger.error(error_msg)
+                raise DriverInstallationError(error_msg)
+
+            driver_info = get_driver_info(driver_name)
+            if not driver_info:
+                error_msg = f"Treiber-Info für '{driver_name}' nicht gefunden"
+                self.logger.error(error_msg)
+                raise DriverInstallationError(error_msg)
+
+            # Installiere Drucker-Treiber
+            if driver_info.source == DriverSource.REPOSITORY:
+                success = self.install_from_repository(
+                    driver_info.package_name, use_sudo=use_sudo
+                )
+                if success:
+                    installed_packages.append(driver_info.package_name)
+            elif driver_info.source == DriverSource.BROTHER_WEBSITE:
+                # Download und Installation von Brother-Website
+                if not driver_info.download_url:
+                    error_msg = f"Keine Download-URL für '{driver_name}' hinterlegt"
+                    self.logger.error(error_msg)
+                    raise DriverInstallationError(error_msg)
+
+                self.logger.info(
+                    f"Lade offiziellen Brother-Treiber herunter: {driver_info.download_url}"
+                )
+                success = self.install_from_url(
+                    driver_info.download_url, use_sudo=use_sudo, cleanup=True
+                )
+                if success:
+                    installed_packages.append(driver_info.name)
+            else:
+                error_msg = f"Unbekannte Treiber-Quelle: {driver_info.source}"
+                self.logger.error(error_msg)
+                raise DriverInstallationError(error_msg)
+
+            # Scanner-Treiber (falls Multifunktionsgerät)
+            if install_scanner:
+                scanner_driver_name = get_scanner_driver(model)
+                if scanner_driver_name:
+                    scanner_info = get_driver_info(scanner_driver_name)
+                    if scanner_info and scanner_info.source == DriverSource.REPOSITORY:
+                        success = self.install_from_repository(
+                            scanner_info.package_name, use_sudo=use_sudo
+                        )
+                        if success:
+                            installed_packages.append(scanner_info.package_name)
+
+        # Fehler wenn keine Installation erfolgreich war
+        if not installed_packages:
+            if manufacturer.lower() != "brother":
+                error_msg = (
+                    f"Kein Treiber für {manufacturer} {model} gefunden. "
+                    "Foomatic-DB hat keinen passenden Treiber."
+                )
+            else:
+                error_msg = (
+                    f"Keine Treiber für Brother {model} gefunden. "
+                    "Weder Foomatic noch Brother Official Driver verfügbar."
+                )
+            self.logger.error(error_msg)
+            raise DriverInstallationError(error_msg)
 
         self.logger.info(
             f"Installation abgeschlossen. Installierte Pakete: {', '.join(installed_packages)}"

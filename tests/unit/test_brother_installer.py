@@ -26,7 +26,8 @@ class TestDriverInstaller:
     @pytest.fixture
     def installer(self, mock_logger):
         """DriverInstaller Instanz"""
-        return DriverInstaller(logger=mock_logger)
+        # Deaktiviere Foomatic für Brother-spezifische Tests
+        return DriverInstaller(logger=mock_logger, use_foomatic=False)
 
     def test_installer_initialization(self, mock_logger):
         """Test: Installer initialisieren"""

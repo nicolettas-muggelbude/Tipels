@@ -60,17 +60,21 @@ Wie Vogelfußspuren auf einem Blatt Papier führt dich Tipels Schritt für Schri
 ## ✨ Features
 
 ### 🖨️ Drucker-Setup
-- ✅ Automatische Erkennung von USB- und Netzwerk-Druckern
-- ✅ Intelligente Treiberauswahl (Repository → Hersteller → Open-Source)
-- ✅ Automatische CUPS-Integration
-- ✅ Testdruck nach Installation
-- ✅ Toner-/Tintenstatus anzeigen
+- ✅ **Automatische Erkennung** von USB- und Netzwerk-Druckern
+- ✅ **OpenPrinting-First Strategie**: Foomatic-DB mit ~10.000+ Druckern
+- ✅ **Intelligente Treiberauswahl**: OpenPrinting → Hersteller-Website → Fallback
+- ✅ **Multi-Hersteller-Support**: Brother, HP, Canon, Epson (via Foomatic)
+- ✅ **Treiber-Cache**: Schneller Zugriff auf bereits erkannte Drucker
+- ⏳ CUPS-Integration (in Entwicklung)
+- ⏳ Testdruck nach Installation (geplant)
 
 ### 🖼️ Scanner-Setup
-- ✅ Automatische Scanner-Erkennung
-- ✅ SANE-Integration
-- ✅ Automatisches Hinzufügen zu Benutzergruppen (`lp`, `scanner`, `saned`)
-- ✅ Testscan nach Installation
+- ✅ **Automatische Scanner-Erkennung**
+- ✅ **SANE/brscan4-Integration** (Brother)
+- ✅ **USB + Netzwerk-Support** via brsaneconfig4
+- ✅ **Automatisches Hinzufügen zu Benutzergruppen** (`lp`, `scanner`, `saned`)
+- ✅ **Test-Scan-Funktion** via scanimage
+- ✅ **Scanner-Status-Prüfung** (Systemvoraussetzungen)
 
 ### 💾 Backup & Restore
 - ✅ Konfiguration sichern (Drucker, Scanner, Treiber)
@@ -228,8 +232,8 @@ make lint
 ```
 
 **Test-Status:**
-- ✅ 29 Unit-Tests (alle bestehen)
-- ✅ 52% Code-Coverage
+- ✅ 155 Unit-Tests (alle bestehen)
+- ✅ 76% Code-Coverage
 - ✅ CI/CD mit GitHub Actions
 
 ---
@@ -238,21 +242,27 @@ make lint
 
 **Aktuelle Version**: v0.1.0 (Alpha - In Entwicklung)
 
-### ✅ Implementiert
+### ✅ Implementiert (Phase 1-3)
 - [x] Projekt-Struktur & Setup
 - [x] Logger-System (94% Coverage)
 - [x] Config-System (79% Coverage)
+- [x] **Hardware-Detector** (USB/Netzwerk, 83% Coverage)
+- [x] **Device-Klassen** (Printer, Scanner, MFP)
+- [x] **Foomatic-Integration** (~10.000+ Drucker via OpenPrinting)
+- [x] **Printer-Cache** (JSON-basiert, 97% Coverage)
+- [x] **DriverInstaller** (Repository + Brother-Website, 67% Coverage)
+- [x] **Brother-Scanner-Manager** (SANE/brscan4, 82% Coverage)
+- [x] **OpenPrinting-First Strategie** (Automatische Multi-Hersteller-Unterstützung)
 - [x] CLI-Grundgerüst
-- [x] Unit-Tests
+- [x] 155 Unit-Tests (76% Coverage)
 - [x] CI/CD (GitHub Actions)
 - [x] Logo & Branding
-- [x] Dokumentation
+- [x] Umfassende Dokumentation
 
-### 🚧 In Arbeit
-- [ ] Hardware-Detector (USB/Netzwerk)
-- [ ] Brother-Treiber-Modul
-- [ ] CUPS-Integration
-- [ ] SANE-Integration
+### 🚧 In Arbeit (Phase 4)
+- [ ] CUPS-Helper (Drucker registrieren)
+- [ ] SANE-Helper (Scanner-Utilities)
+- [ ] Testdruck-Funktion
 - [ ] GTK-GUI
 - [ ] PolicyKit-Integration
 - [ ] Backup/Restore-Funktion
