@@ -1,0 +1,62 @@
+name: Feature Request
+description: Schlage ein neues Feature für Tipels vor
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke für deinen Feature-Vorschlag! Hilf uns zu verstehen, was du brauchst.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Motivation
+      description: Welches Problem würde dieses Feature lösen?
+      placeholder: "Aktuell ist es schwierig, ... weil ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Vorgeschlagene Lösung
+      description: Wie sollte das Feature funktionieren?
+      placeholder: "Ich würde mir wünschen, dass ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativen
+      description: Hast du andere Lösungen in Betracht gezogen?
+      placeholder: "Alternativ könnte man ..."
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Nutzen
+      description: Wer würde von diesem Feature profitieren?
+      placeholder: "Dieses Feature würde helfen für ..."
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priorität (aus deiner Sicht)
+      options:
+        - Nice to have
+        - Wichtig
+        - Kritisch
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Beitrag
+      description: Möchtest du bei der Implementierung helfen?
+      options:
+        - label: Ich würde gerne einen Pull Request dafür erstellen
+        - label: Ich kann beim Testen helfen
+        - label: Ich kann bei der Dokumentation helfen

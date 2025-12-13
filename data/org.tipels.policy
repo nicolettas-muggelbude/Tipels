@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>Tipels</vendor>
+  <vendor_url>https://github.com/[username]/Tipels</vendor_url>
+
+  <action id="org.tipels.install-driver">
+    <description>Install printer or scanner driver</description>
+    <description xml:lang="de">Drucker- oder Scanner-Treiber installieren</description>
+    <message>Authentication is required to install a driver</message>
+    <message xml:lang="de">Authentifizierung erforderlich um Treiber zu installieren</message>
+    <icon_name>printer</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.tipels.configure-printer">
+    <description>Configure printer in CUPS</description>
+    <description xml:lang="de">Drucker in CUPS konfigurieren</description>
+    <message>Authentication is required to configure a printer</message>
+    <message xml:lang="de">Authentifizierung erforderlich um Drucker zu konfigurieren</message>
+    <icon_name>printer</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.tipels.configure-scanner">
+    <description>Configure scanner in SANE</description>
+    <description xml:lang="de">Scanner in SANE konfigurieren</description>
+    <message>Authentication is required to configure a scanner</message>
+    <message xml:lang="de">Authentifizierung erforderlich um Scanner zu konfigurieren</message>
+    <icon_name>scanner</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.tipels.modify-user-groups">
+    <description>Add user to printer/scanner groups</description>
+    <description xml:lang="de">Benutzer zu Drucker/Scanner-Gruppen hinzufügen</description>
+    <message>Authentication is required to modify user groups</message>
+    <message xml:lang="de">Authentifizierung erforderlich um Benutzergruppen zu ändern</message>
+    <icon_name>system-users</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.tipels.remove-device">
+    <description>Remove printer or scanner</description>
+    <description xml:lang="de">Drucker oder Scanner entfernen</description>
+    <message>Authentication is required to remove a device</message>
+    <message xml:lang="de">Authentifizierung erforderlich um Gerät zu entfernen</message>
+    <icon_name>edit-delete</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+  </action>
+</policyconfig>

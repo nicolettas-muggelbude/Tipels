@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          python3-gi \
+          python3-gi-cairo \
+          gir1.2-gtk-3.0 \
+          dpkg-dev \
+          debhelper
+        python -m pip install --upgrade pip
+        pip install build twine
+
+    - name: Build Python package
+      run: |
+        python -m build
+
+    - name: Build .deb package
+      run: |
+        # TODO: dpkg-buildpackage ausführen
+        echo "TODO: .deb-Paket bauen"
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          dist/*.whl
+          dist/*.tar.gz
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish to PyPI
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+      run: |
+        # Optional: PyPI-Upload
+        # twine upload dist/*
+        echo "PyPI-Upload optional"

@@ -1,0 +1,15 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Tipels
+Name[de]=Tipels
+GenericName=Printer and Scanner Setup
+GenericName[de]=Drucker- und Scanner-Einrichtung
+Comment=Easy setup for printers and scanners
+Comment[de]=Einfache Einrichtung von Druckern und Scannern
+Icon=tipels
+Exec=tipels
+Terminal=false
+Categories=System;Settings;HardwareSettings;Printing;
+Keywords=printer;scanner;brother;cups;sane;driver;setup;
+StartupNotify=true

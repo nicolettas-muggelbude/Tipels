@@ -1,0 +1,98 @@
+name: Bug Report
+description: Melde einen Fehler in Tipels
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke, dass du einen Bug meldest! Bitte fülle das Formular so vollständig wie möglich aus.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Beschreibung
+      description: Was ist passiert? Was wurde erwartet?
+      placeholder: Beschreibe den Fehler...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Schritte zum Reproduzieren
+      description: Wie kann der Fehler reproduziert werden?
+      placeholder: |
+        1. Gehe zu...
+        2. Klicke auf...
+        3. Beobachte...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Erwartetes Verhalten
+      description: Was sollte stattdessen passieren?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Falls vorhanden, füge relevante Log-Ausgaben ein
+      placeholder: |
+        Logs findest du in: ~/.local/share/tipels/logs/tipels.log
+      render: shell
+
+  - type: input
+    id: version
+    attributes:
+      label: Tipels-Version
+      description: Welche Version von Tipels verwendest du?
+      placeholder: "z.B. 1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Betriebssystem
+      description: Welches OS und welche Version?
+      placeholder: "z.B. Ubuntu 24.04"
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python-Version
+      description: Welche Python-Version? (python3 --version)
+      placeholder: "z.B. 3.10.12"
+
+  - type: input
+    id: device
+    attributes:
+      label: Gerät
+      description: Welches Drucker/Scanner-Modell?
+      placeholder: "z.B. Brother MFC-L2700DN"
+
+  - type: dropdown
+    id: connection
+    attributes:
+      label: Verbindungsart
+      options:
+        - USB
+        - Netzwerk (LAN)
+        - Netzwerk (WLAN)
+        - Unbekannt
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checkliste
+      options:
+        - label: Ich habe die Dokumentation gelesen
+        - label: Ich habe nach ähnlichen Issues gesucht
+        - label: Ich verwende die neueste Version von Tipels
