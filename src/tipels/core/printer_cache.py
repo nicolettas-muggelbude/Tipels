@@ -75,9 +75,7 @@ class PrinterCache:
         """
         return f"{manufacturer}:{model}".lower()
 
-    def get(
-        self, manufacturer: str, model: str
-    ) -> Optional[Dict[str, Any]]:
+    def get(self, manufacturer: str, model: str) -> Optional[Dict[str, Any]]:
         """
         Gibt Cache-Eintrag für einen Drucker zurück
 
@@ -138,9 +136,7 @@ class PrinterCache:
 
         self.logger.info(f"Cache aktualisiert für {manufacturer} {model}")
 
-    def update(
-        self, manufacturer: str, model: str, **updates
-    ):
+    def update(self, manufacturer: str, model: str, **updates):
         """
         Aktualisiert einen Cache-Eintrag
 

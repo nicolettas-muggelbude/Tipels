@@ -198,9 +198,7 @@ class TestBrotherScannerManager:
     @patch("subprocess.run")
     def test_list_scanners_empty(self, mock_run, scanner_manager):
         """Test: Keine Scanner gefunden"""
-        mock_run.return_value = MagicMock(
-            returncode=0, stdout="No scanners found.", stderr=""
-        )
+        mock_run.return_value = MagicMock(returncode=0, stdout="No scanners found.", stderr="")
 
         scanners = scanner_manager.list_scanners()
 
@@ -251,9 +249,7 @@ class TestBrotherScannerManager:
     @patch("subprocess.run")
     def test_test_scan_failed(self, mock_run, scanner_manager):
         """Test: Fehlgeschlagener Test-Scan"""
-        mock_run.return_value = MagicMock(
-            returncode=1, stdout="", stderr="No scanner found"
-        )
+        mock_run.return_value = MagicMock(returncode=1, stdout="", stderr="No scanner found")
 
         with pytest.raises(ScannerConfigurationError, match="fehlgeschlagen"):
             scanner_manager.test_scan()
@@ -293,9 +289,7 @@ class TestBrotherScannerManager:
 
     @patch("subprocess.run")
     @patch("getpass.getuser")
-    def test_add_user_to_groups_success(
-        self, mock_getuser, mock_run, scanner_manager
-    ):
+    def test_add_user_to_groups_success(self, mock_getuser, mock_run, scanner_manager):
         """Test: Benutzer zu Gruppen hinzufügen"""
         mock_getuser.return_value = "testuser"
 
@@ -319,9 +313,7 @@ class TestBrotherScannerManager:
 
     @patch("subprocess.run")
     @patch("getpass.getuser")
-    def test_add_user_to_groups_with_sudo(
-        self, mock_getuser, mock_run, scanner_manager
-    ):
+    def test_add_user_to_groups_with_sudo(self, mock_getuser, mock_run, scanner_manager):
         """Test: Benutzer zu Gruppen hinzufügen mit sudo"""
         mock_getuser.return_value = "testuser"
 
@@ -343,9 +335,7 @@ class TestBrotherScannerManager:
 
     @patch("subprocess.run")
     @patch("getpass.getuser")
-    def test_add_user_to_groups_group_not_exists(
-        self, mock_getuser, mock_run, scanner_manager
-    ):
+    def test_add_user_to_groups_group_not_exists(self, mock_getuser, mock_run, scanner_manager):
         """Test: Benutzer zu nicht-existierenden Gruppen hinzufügen"""
         mock_getuser.return_value = "testuser"
 

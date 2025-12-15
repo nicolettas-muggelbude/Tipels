@@ -26,6 +26,7 @@ from tipels.drivers.brother.driver_db import (
 
 class DriverInstallationError(Exception):
     """Fehler bei der Treiber-Installation"""
+
     pass
 
 
@@ -122,9 +123,7 @@ class DriverInstaller:
             self.logger.error(f"Fehler bei Version-Abfrage: {e}")
             return None
 
-    def install_from_repository(
-        self, package_name: str, use_sudo: bool = True
-    ) -> bool:
+    def install_from_repository(self, package_name: str, use_sudo: bool = True) -> bool:
         """
         Installiert ein Paket aus den Repositories
 
@@ -368,9 +367,7 @@ class DriverInstaller:
         except (subprocess.TimeoutExpired, FileNotFoundError):
             return False
 
-    def install_from_url(
-        self, url: str, use_sudo: bool = True, cleanup: bool = True
-    ) -> bool:
+    def install_from_url(self, url: str, use_sudo: bool = True, cleanup: bool = True) -> bool:
         """
         Lädt .deb-Paket herunter und installiert es
 
@@ -391,9 +388,7 @@ class DriverInstaller:
         # Installation
         return self.install_deb_package(deb_file, use_sudo=use_sudo, cleanup=cleanup)
 
-    def find_driver_with_foomatic(
-        self, manufacturer: str, model: str
-    ) -> Optional[FoomaticDriver]:
+    def find_driver_with_foomatic(self, manufacturer: str, model: str) -> Optional[FoomaticDriver]:
         """
         Findet Treiber über Foomatic-DB
 
@@ -441,8 +436,7 @@ class DriverInstaller:
                 )
 
             self.logger.info(
-                f"Foomatic-Treiber gefunden: {recommended.driver} "
-                f"({recommended.ppd_name})"
+                f"Foomatic-Treiber gefunden: {recommended.driver} " f"({recommended.ppd_name})"
             )
             return recommended
 
@@ -480,8 +474,7 @@ class DriverInstaller:
             DriverInstallationError: Bei Installationsfehler
         """
         self.logger.info(
-            f"Installiere Treiber für {manufacturer} {model} "
-            f"(force_official={force_official})"
+            f"Installiere Treiber für {manufacturer} {model} " f"(force_official={force_official})"
         )
 
         installed_packages = []
@@ -499,9 +492,7 @@ class DriverInstaller:
                 # Versuche Repository-Installation
                 package_name = f"printer-driver-{foomatic_driver.driver}"
                 try:
-                    success = self.install_from_repository(
-                        package_name, use_sudo=use_sudo
-                    )
+                    success = self.install_from_repository(package_name, use_sudo=use_sudo)
                     if success:
                         installed_packages.append(package_name)
                         # Update Cache mit last_used
@@ -553,9 +544,7 @@ class DriverInstaller:
 
             # Installiere Drucker-Treiber
             if driver_info.source == DriverSource.REPOSITORY:
-                success = self.install_from_repository(
-                    driver_info.package_name, use_sudo=use_sudo
-                )
+                success = self.install_from_repository(driver_info.package_name, use_sudo=use_sudo)
                 if success:
                     installed_packages.append(driver_info.package_name)
             elif driver_info.source == DriverSource.BROTHER_WEBSITE:

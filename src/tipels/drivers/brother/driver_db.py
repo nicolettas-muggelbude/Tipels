@@ -11,6 +11,7 @@ from enum import Enum
 
 class DriverType(Enum):
     """Treiber-Typ"""
+
     OPENSOURCE = "opensource"  # OpenPrinting, brlaser, etc.
     OFFICIAL = "official"  # Brother Official Driver
     CUPS_GENERIC = "cups_generic"  # CUPS Generic PostScript
@@ -18,6 +19,7 @@ class DriverType(Enum):
 
 class DriverSource(Enum):
     """Treiber-Quelle"""
+
     REPOSITORY = "repository"  # Ubuntu/Debian Repository
     BROTHER_WEBSITE = "brother_website"  # Brother Download-Center
     OPENPRINTING = "openprinting"  # OpenPrinting.org
@@ -70,7 +72,6 @@ BROTHER_DRIVERS = {
         description="Open-Source-Treiber für Brother Monochrom-Laser-Drucker",
         requires_non_free=False,
     ),
-
     # Brother Scan Key Tool - Scanner-Unterstützung
     "brscan4": DriverInfo(
         name="brscan4",
@@ -84,7 +85,6 @@ BROTHER_DRIVERS = {
         description="Brother Scanner-Treiber für SANE",
         requires_non_free=False,
     ),
-
     # Brother LPR Driver (Official) - Generisch
     "brother-lpr": DriverInfo(
         name="brother-lpr",
@@ -95,7 +95,6 @@ BROTHER_DRIVERS = {
         description="Offizieller Brother LPR-Treiber",
         requires_non_free=False,
     ),
-
     # Brother CUPS Wrapper (Official) - Generisch
     "brother-cups-wrapper": DriverInfo(
         name="brother-cups-wrapper",
@@ -106,13 +105,11 @@ BROTHER_DRIVERS = {
         description="Offizieller Brother CUPS-Wrapper",
         requires_non_free=False,
     ),
-
     # ========== Modellspezifische Brother Official Drivers (Fallback) ==========
     # Hinweis: Diese werden nur verwendet wenn:
     # 1. OpenPrinting-Treiber nicht verfügbar/funktioniert nicht
     # 2. User explizit Brother-Treiber wünscht
     # 3. Spezielle Features benötigt (Fax, erweiterte Funktionen)
-
     # MFC-L2700DN - LPR Driver
     "brother-lpr-mfcl2700dn": DriverInfo(
         name="brother-lpr-mfcl2700dn",
@@ -124,7 +121,6 @@ BROTHER_DRIVERS = {
         description="Brother LPR Driver für MFC-L2700DN",
         requires_non_free=False,
     ),
-
     # MFC-L2700DN - CUPS Wrapper
     "brother-cups-mfcl2700dn": DriverInfo(
         name="brother-cups-mfcl2700dn",
@@ -136,7 +132,6 @@ BROTHER_DRIVERS = {
         description="Brother CUPS Wrapper für MFC-L2700DN",
         requires_non_free=False,
     ),
-
     # MFC-L2700DW - LPR Driver
     "brother-lpr-mfcl2700dw": DriverInfo(
         name="brother-lpr-mfcl2700dw",

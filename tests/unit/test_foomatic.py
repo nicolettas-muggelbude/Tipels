@@ -164,9 +164,7 @@ class TestFoomaticDetector:
         assert driver1 == "brlaser"
 
         # Pattern 2: Foomatic/hplip in Description
-        driver2 = detector._extract_driver_name(
-            "hp-laserjet.ppd", "HP LaserJet Foomatic/hplip"
-        )
+        driver2 = detector._extract_driver_name("hp-laserjet.ppd", "HP LaserJet Foomatic/hplip")
         assert driver2 == "hplip"
 
     @patch("subprocess.run")

@@ -392,9 +392,7 @@ class BrotherScannerManager:
                     self.logger.info(f"Benutzer '{username}' zu Gruppe '{group}' hinzugefügt")
                     added_groups.append(group)
                 else:
-                    self.logger.warning(
-                        f"Fehler beim Hinzufügen zu '{group}': {result.stderr}"
-                    )
+                    self.logger.warning(f"Fehler beim Hinzufügen zu '{group}': {result.stderr}")
 
             except subprocess.TimeoutExpired:
                 self.logger.error(f"Timeout beim Hinzufügen zu Gruppe '{group}'")

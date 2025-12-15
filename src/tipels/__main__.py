@@ -17,11 +17,13 @@ def main():
     if len(sys.argv) > 1:
         # CLI-Modus
         from tipels.cli.commands import cli
+
         cli()
     else:
         # GUI-Modus
         try:
             from tipels.gui.gtk.main_window import main as gui_main
+
             gui_main()
         except ImportError as e:
             print(f"Fehler beim Laden der GUI: {e}")

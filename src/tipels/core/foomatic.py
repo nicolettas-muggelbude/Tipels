@@ -101,9 +101,7 @@ class FoomaticDetector:
             self.logger.error(f"Fehler bei lpinfo: {e}")
             return []
 
-    def find_drivers_for_printer(
-        self, manufacturer: str, model: str
-    ) -> List[FoomaticDriver]:
+    def find_drivers_for_printer(self, manufacturer: str, model: str) -> List[FoomaticDriver]:
         """
         Findet alle verfügbaren Treiber für ein Drucker-Modell
 
@@ -223,9 +221,7 @@ class FoomaticDetector:
 
         return "unknown"
 
-    def get_recommended_driver(
-        self, manufacturer: str, model: str
-    ) -> Optional[FoomaticDriver]:
+    def get_recommended_driver(self, manufacturer: str, model: str) -> Optional[FoomaticDriver]:
         """
         Gibt den empfohlenen Treiber für ein Drucker-Modell zurück
 
@@ -258,9 +254,7 @@ class FoomaticDetector:
         )
 
         recommended = drivers_sorted[0]
-        self.logger.info(
-            f"Empfohlener Treiber für {manufacturer} {model}: {recommended.driver}"
-        )
+        self.logger.info(f"Empfohlener Treiber für {manufacturer} {model}: {recommended.driver}")
         return recommended
 
     def get_ppd_file_path(self, ppd_name: str) -> Optional[str]:

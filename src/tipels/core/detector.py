@@ -14,7 +14,9 @@ from tipels.core.logger import TipelsLogger
 
 
 # GitHub Issue-Template URL für Hardware-Support-Anfragen
-HARDWARE_SUPPORT_URL = "https://github.com/nicolettas-muggelbude/Tipels/issues/new?template=hardware_support.yml"
+HARDWARE_SUPPORT_URL = (
+    "https://github.com/nicolettas-muggelbude/Tipels/issues/new?template=hardware_support.yml"
+)
 
 # USB Vendor IDs bekannter Drucker-Hersteller
 USB_VENDORS = {
@@ -132,9 +134,7 @@ class HardwareDetector:
                 description = match.group(3).strip()
 
                 # Identifiziere Drucker/Scanner anhand VID/PID
-                device = self._identify_usb_device(
-                    vendor_id, product_id, description
-                )
+                device = self._identify_usb_device(vendor_id, product_id, description)
                 if device:
                     devices.append(device)
 
@@ -218,7 +218,9 @@ class HardwareDetector:
         if "brother" in service_lower:
             manufacturer = "Brother"
             # Extrahiere Modell (z.B. "MFC-L2700DN")
-            match = re.search(r"(MFC-[A-Z0-9]+|DCP-[A-Z0-9]+|HL-[A-Z0-9]+)", service_name, re.IGNORECASE)
+            match = re.search(
+                r"(MFC-[A-Z0-9]+|DCP-[A-Z0-9]+|HL-[A-Z0-9]+)", service_name, re.IGNORECASE
+            )
             if match:
                 model = match.group(1).upper()
                 supported = True
@@ -227,7 +229,11 @@ class HardwareDetector:
         elif "hp" in service_lower or "hewlett" in service_lower:
             manufacturer = "HP"
             # Extrahiere Modell (z.B. "LaserJet Pro M404dn")
-            match = re.search(r"(LaserJet|OfficeJet|DeskJet|Envy|PageWide)\s+[A-Za-z0-9\s-]+", service_name, re.IGNORECASE)
+            match = re.search(
+                r"(LaserJet|OfficeJet|DeskJet|Envy|PageWide)\s+[A-Za-z0-9\s-]+",
+                service_name,
+                re.IGNORECASE,
+            )
             if match:
                 model = match.group(0).strip()
                 supported = False
@@ -236,7 +242,9 @@ class HardwareDetector:
         elif "canon" in service_lower:
             manufacturer = "Canon"
             # Extrahiere Modell (z.B. "PIXMA TR4500")
-            match = re.search(r"(PIXMA|imageCLASS|imageRUNNER|MAXIFY)\s+[A-Z0-9-]+", service_name, re.IGNORECASE)
+            match = re.search(
+                r"(PIXMA|imageCLASS|imageRUNNER|MAXIFY)\s+[A-Z0-9-]+", service_name, re.IGNORECASE
+            )
             if match:
                 model = match.group(0).strip()
                 supported = False
@@ -245,7 +253,11 @@ class HardwareDetector:
         elif "epson" in service_lower:
             manufacturer = "Epson"
             # Extrahiere Modell (z.B. "WorkForce WF-2830")
-            match = re.search(r"(WorkForce|EcoTank|Expression|SureColor)\s+[A-Z0-9-]+", service_name, re.IGNORECASE)
+            match = re.search(
+                r"(WorkForce|EcoTank|Expression|SureColor)\s+[A-Z0-9-]+",
+                service_name,
+                re.IGNORECASE,
+            )
             if match:
                 model = match.group(0).strip()
                 supported = False
@@ -320,9 +332,7 @@ class HardwareDetector:
 
         # Brother Vendor ID: 04f9 (UNTERSTÜTZT)
         if vendor_id_lower == "04f9":
-            return self._identify_brother_device(
-                vendor_id, product_id, description
-            )
+            return self._identify_brother_device(vendor_id, product_id, description)
 
         # Andere bekannte Hersteller (NOCH NICHT UNTERSTÜTZT)
         if vendor_id_lower in USB_VENDORS:
@@ -431,9 +441,7 @@ class HardwareDetector:
 
         device_info = brother_devices.get(product_id.lower())
         if not device_info:
-            self.logger.warning(
-                f"Unbekanntes Brother-Gerät: {vendor_id}:{product_id}"
-            )
+            self.logger.warning(f"Unbekanntes Brother-Gerät: {vendor_id}:{product_id}")
             return None
 
         # Erstelle Device-Objekt

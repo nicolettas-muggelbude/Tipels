@@ -144,7 +144,9 @@ class TestDriverInstaller:
         """Test: Fehlgeschlagene Installation"""
         mock_results = [
             MagicMock(returncode=1, stdout=""),  # nicht installiert
-            MagicMock(returncode=1, stdout="", stderr="E: Package not found"),  # Installation fehlgeschlagen
+            MagicMock(
+                returncode=1, stdout="", stderr="E: Package not found"
+            ),  # Installation fehlgeschlagen
         ]
         mock_run.side_effect = mock_results
 
@@ -296,6 +298,7 @@ ii  brother-lpr-mfcl2700dn  3.5.1-1  amd64  Brother LPR Driver
     def test_download_deb_package_failure(self, mock_get, installer):
         """Test: Fehlgeschlagener Download"""
         import requests
+
         mock_get.side_effect = requests.RequestException("Connection error")
 
         url = "https://example.com/brother-lpr.deb"
@@ -306,9 +309,7 @@ ii  brother-lpr-mfcl2700dn  3.5.1-1  amd64  Brother LPR Driver
     @patch("subprocess.run")
     @patch("pathlib.Path.exists")
     @patch("pathlib.Path.unlink")
-    def test_install_deb_package_success(
-        self, mock_unlink, mock_exists, mock_run, installer
-    ):
+    def test_install_deb_package_success(self, mock_unlink, mock_exists, mock_run, installer):
         """Test: Erfolgreiche .deb-Installation"""
         mock_exists.return_value = True
         mock_result = MagicMock()
@@ -341,9 +342,7 @@ ii  brother-lpr-mfcl2700dn  3.5.1-1  amd64  Brother LPR Driver
 
     @patch("subprocess.run")
     @patch("pathlib.Path.exists")
-    def test_install_deb_package_dependency_fix(
-        self, mock_exists, mock_run, installer
-    ):
+    def test_install_deb_package_dependency_fix(self, mock_exists, mock_run, installer):
         """Test: Abhängigkeiten automatisch reparieren"""
         mock_exists.return_value = True
 
@@ -373,9 +372,7 @@ ii  brother-lpr-mfcl2700dn  3.5.1-1  amd64  Brother LPR Driver
 
     @patch("tipels.drivers.brother.installer.DriverInstaller.download_deb_package")
     @patch("tipels.drivers.brother.installer.DriverInstaller.install_deb_package")
-    def test_install_from_url_success(
-        self, mock_install, mock_download, installer
-    ):
+    def test_install_from_url_success(self, mock_install, mock_download, installer):
         """Test: Installation von URL"""
         mock_download.return_value = Path("/tmp/test.deb")
         mock_install.return_value = True
@@ -390,6 +387,7 @@ ii  brother-lpr-mfcl2700dn  3.5.1-1  amd64  Brother LPR Driver
     @patch("subprocess.run")
     def test_install_driver_force_official(self, mock_run, installer):
         """Test: Installation mit force_official (Brother statt OpenPrinting)"""
+
         # Mock: Alle Checks zeigen "nicht installiert", Installationen erfolgreich
         def mock_subprocess(*args, **kwargs):
             cmd = args[0] if args else kwargs.get("args", [])

@@ -11,6 +11,7 @@ from typing import Optional
 
 class DeviceType(Enum):
     """Gerätetyp"""
+
     PRINTER = "printer"
     SCANNER = "scanner"
     MULTIFUNCTION = "multifunction"  # Drucker + Scanner
@@ -18,6 +19,7 @@ class DeviceType(Enum):
 
 class ConnectionType(Enum):
     """Verbindungsart"""
+
     USB = "usb"
     NETWORK = "network"
     BLUETOOTH = "bluetooth"
@@ -26,6 +28,7 @@ class ConnectionType(Enum):
 
 class DeviceStatus(Enum):
     """Gerätestatus"""
+
     DETECTED = "detected"  # Erkannt, aber nicht konfiguriert
     CONFIGURED = "configured"  # In CUPS/SANE konfiguriert
     READY = "ready"  # Bereit zur Nutzung

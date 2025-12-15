@@ -24,9 +24,9 @@ def scan():
 
 
 @cli.command()
-@click.option('--model', required=True, help='Drucker/Scanner-Modell')
-@click.option('--connection', type=click.Choice(['usb', 'network']), required=True)
-@click.option('--ip', help='IP-Adresse (nur bei Netzwerk)')
+@click.option("--model", required=True, help="Drucker/Scanner-Modell")
+@click.option("--connection", type=click.Choice(["usb", "network"]), required=True)
+@click.option("--ip", help="IP-Adresse (nur bei Netzwerk)")
 def install(model, connection, ip):
     """Installiere Drucker/Scanner"""
     click.echo(f"Installiere {model} via {connection}...")
@@ -38,7 +38,7 @@ def install(model, connection, ip):
 
 
 @cli.command()
-@click.argument('device_name')
+@click.argument("device_name")
 def remove(device_name):
     """Entferne Drucker/Scanner"""
     click.echo(f"Entferne {device_name}...")
@@ -55,7 +55,7 @@ def list():
 
 
 @cli.command()
-@click.argument('output_path', type=click.Path())
+@click.argument("output_path", type=click.Path())
 def backup(output_path):
     """Erstelle Backup der Konfiguration"""
     click.echo(f"Erstelle Backup nach {output_path}...")
@@ -64,7 +64,7 @@ def backup(output_path):
 
 
 @cli.command()
-@click.argument('backup_path', type=click.Path(exists=True))
+@click.argument("backup_path", type=click.Path(exists=True))
 def restore(backup_path):
     """Stelle Backup wieder her"""
     click.echo(f"Stelle Backup von {backup_path} wieder her...")
