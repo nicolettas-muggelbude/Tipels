@@ -89,6 +89,7 @@ Tipels nutzt eine dreistufige Treiberarchitektur:
 - `tipels.core.printer_cache`: PrinterCache, JSON-Persistenz
 - `tipels.drivers.brother.installer`: DriverInstaller mit Foomatic-Integration
 - `tipels.drivers.brother.scanner`: BrotherScannerManager, SANE/brscan4-Integration
+- `tipels.utils.cups_helper`: CupsHelper, CUPS-Drucker-Verwaltung
 
 #### Scanner-Integration (SANE)
 Brother-Scanner werden über SANE (Scanner Access Now Easy) verwaltet:
@@ -100,6 +101,22 @@ Brother-Scanner werden über SANE (Scanner Access Now Easy) verwaltet:
 3. **Gruppenverwaltung**: Automatisches Hinzufügen zu scanner, saned, lp
 4. **Test-Scan**: Via `scanimage` für Funktionstest
 5. **Scanner-Status**: Systemprüfung (brscan4, SANE, Gruppen)
+
+#### CUPS-Integration (Drucker)
+Drucker werden über CUPS (Common UNIX Printing System) verwaltet:
+
+1. **CupsHelper**: Wrapper für CUPS-Kommandos (subprocess-basiert)
+2. **Drucker-Verwaltung**: Via `lpadmin`
+   - Hinzufügen: `lpadmin -p name -E -v uri -m ppd -L location -D description`
+   - Entfernen: `lpadmin -x name`
+3. **Drucker-Abfragen**: Via `lpstat`, `lpoptions`
+   - Liste: `lpstat -p` (alle Drucker)
+   - Status: `lpstat -p name -l` (detaillierter Status)
+   - URI: `lpstat -v name` (Device-URI)
+   - Jobs: `lpstat -o name` (aktive Druckaufträge)
+4. **PPD-Suche**: Via `lpinfo -m` (verfügbare PPD-Dateien)
+5. **Testdruck**: Via `lp -d printer testfile`
+6. **Unterstützte Verbindungen**: USB, IPP, Socket, LPD
 
 ### Architektur
 - **Modularer Aufbau**: Plugin-System für Hersteller
@@ -173,13 +190,13 @@ Brother-Scanner werden über SANE (Scanner Access Now Easy) verwaltet:
 - [x] **Brother Scanner-Manager** (SANE/brscan4-Integration)
 - [x] **Scanner-Konfiguration** (USB + Netzwerk, brsaneconfig4)
 - [x] **Benutzer-Gruppenverwaltung** (scanner, saned, lp)
-- [x] Unit-Tests (155 Tests, 76% Coverage)
+- [x] **CUPS-Helper** (Drucker registrieren, Status, Testdruck)
+- [x] Unit-Tests (174 Tests, 78% Coverage)
 - [x] CI/CD (GitHub Actions)
 - [x] Logo & Branding
 - [x] README.md aktualisiert
 - [ ] GitHub-Repository online erstellen
-- [ ] CUPS-Integration (Drucker registrieren)
-- [ ] SANE-Integration (Scanner registrieren)
+- [ ] SANE-Helper (Scanner-Utilities)
 - [ ] GUI-Entwicklung (GTK)
 - [ ] CLI-Interface (funktionsfähig)
 - [ ] PolicyKit-Integration

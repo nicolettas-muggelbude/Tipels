@@ -65,8 +65,8 @@ Wie Vogelfußspuren auf einem Blatt Papier führt dich Tipels Schritt für Schri
 - ✅ **Intelligente Treiberauswahl**: OpenPrinting → Hersteller-Website → Fallback
 - ✅ **Multi-Hersteller-Support**: Brother, HP, Canon, Epson (via Foomatic)
 - ✅ **Treiber-Cache**: Schneller Zugriff auf bereits erkannte Drucker
-- ⏳ CUPS-Integration (in Entwicklung)
-- ⏳ Testdruck nach Installation (geplant)
+- ✅ **CUPS-Integration**: Drucker registrieren, Status abfragen, verwalten
+- ✅ **Testdruck-Funktion**: CUPS-Testseite oder eigene Datei drucken
 
 ### 🖼️ Scanner-Setup
 - ✅ **Automatische Scanner-Erkennung**
@@ -232,8 +232,8 @@ make lint
 ```
 
 **Test-Status:**
-- ✅ 155 Unit-Tests (alle bestehen)
-- ✅ 76% Code-Coverage
+- ✅ 174 Unit-Tests (alle bestehen)
+- ✅ 78% Code-Coverage
 - ✅ CI/CD mit GitHub Actions
 
 ---

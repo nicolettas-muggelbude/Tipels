@@ -7,10 +7,19 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Hinzugefügt
+- **CUPS-Helper**: Integration mit CUPS für Drucker-Verwaltung
+  - Drucker hinzufügen/entfernen (USB, IPP, Socket, LPD)
+  - Drucker-Status und -Auflistung
+  - Testdruck-Funktion (CUPS-Testseite oder eigene Datei)
+  - PPD-Datei-Suche via lpinfo
+  - Vollständige Device-URI-Unterstützung
+  - Optional sudo-Support für alle Admin-Operationen
+- **Tests**: 19 neue Unit-Tests für CUPS-Helper (87% Coverage)
+  - 174 Unit-Tests gesamt, 78% Coverage
+
 ### Geplant
-- CUPS-Integration (Drucker registrieren)
 - SANE-Helper (Scanner-Utilities)
-- Testdruck-Funktion
 - GTK-GUI
 - PolicyKit-Integration
 - Backup/Restore-Funktion
