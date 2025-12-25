@@ -108,7 +108,8 @@ class CupsHelper:
                 check=False,
             )
 
-            if result.returncode != 0 and result.stderr:
+            # lpstat gibt Exit-Code 1 wenn keine Drucker installiert sind
+            if result.returncode != 0 and result.stderr and "No destinations added" not in result.stderr:
                 raise CupsError(f"lpstat fehlgeschlagen: {result.stderr}")
 
             printers = []

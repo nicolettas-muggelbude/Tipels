@@ -134,6 +134,46 @@ Drucker werden über CUPS (Common UNIX Printing System) verwaltet:
 5. **Testdruck**: Via `lp -d printer testfile`
 6. **Unterstützte Verbindungen**: USB, IPP, Socket, LPD
 
+#### CLI-Interface
+Vollständig funktionsfähiges Kommandozeilen-Interface mit folgenden Befehlen:
+
+1. **scan**: Hardware-Scan (USB + Netzwerk)
+   - Optionen: `--usb`, `--network`, `--timeout`
+   - Zeigt alle gefundenen Geräte mit Details
+
+2. **install**: Drucker/Scanner installieren
+   - Optionen: `--model`, `--connection`, `--ip`, `--name`, `--type`
+   - Automatische Treiber-Installation und CUPS/SANE-Konfiguration
+
+3. **remove**: Drucker/Scanner entfernen
+   - Optionen: `--printer`, `--scanner`
+   - Mit Bestätigungsdialog
+
+4. **list**: Installierte Geräte auflisten
+   - Optionen: `--printers`, `--scanners`
+   - Zeigt CUPS-Drucker und SANE-Scanner
+
+5. **status**: System-Status anzeigen
+   - CUPS, SANE, Gruppen, Brother-Treiber
+   - Farbcodierte Ausgabe (Grün/Gelb/Rot)
+
+6. **test-print**: Testdruck durchführen
+   - Argument: `printer_name`
+   - Option: `--file` (eigene Test-Datei)
+
+7. **test-scan**: Test-Scan durchführen
+   - Optionen: `--device`, `--output`, `--format`, `--resolution`
+   - Unterstützte Formate: PNM, TIFF, PNG, JPEG
+
+8. **backup**: Backup erstellen (Platzhalter)
+9. **restore**: Backup wiederherstellen (Platzhalter)
+
+**Features:**
+- Farbige Ausgabe für bessere UX (Grün ✓, Rot ✗, Gelb ⚠)
+- Detaillierte Fehlermeldungen
+- Logging für Debugging
+- Exit-Codes für Skript-Integration
+
 ### Architektur
 - **Modularer Aufbau**: Plugin-System für Hersteller
 - **Projektstruktur**:
@@ -208,13 +248,13 @@ Drucker werden über CUPS (Common UNIX Printing System) verwaltet:
 - [x] **Benutzer-Gruppenverwaltung** (scanner, saned, lp)
 - [x] **CUPS-Helper** (Drucker registrieren, Status, Testdruck)
 - [x] **SANE-Helper** (Scanner-Utilities, Auflistung, Test-Scan, Fähigkeiten)
-- [x] Unit-Tests (197 Tests, 78% Coverage)
+- [x] **CLI-Interface** (funktionsfähig mit 9 Befehlen)
+- [x] Unit-Tests (197 Tests, 80% Coverage)
 - [x] CI/CD (GitHub Actions)
 - [x] Logo & Branding
 - [x] README.md aktualisiert
 - [ ] GitHub-Repository online erstellen
 - [ ] GUI-Entwicklung (GTK)
-- [ ] CLI-Interface (funktionsfähig)
 - [ ] PolicyKit-Integration
 - [ ] Backup/Restore-Funktion
 - [ ] Dokumentation erweitern

@@ -242,7 +242,7 @@ make lint
 
 **Aktuelle Version**: v0.1.0 (Alpha - In Entwicklung)
 
-### ✅ Implementiert (Phase 1-4.2)
+### ✅ Implementiert (Phase 1-4.3)
 - [x] Projekt-Struktur & Setup
 - [x] Logger-System (94% Coverage)
 - [x] Config-System (79% Coverage)
@@ -255,14 +255,14 @@ make lint
 - [x] **OpenPrinting-First Strategie** (Automatische Multi-Hersteller-Unterstützung)
 - [x] **CUPS-Helper** (Drucker registrieren, Status, Testdruck)
 - [x] **SANE-Helper** (Scanner-Utilities, Auflistung, Test-Scan, Fähigkeiten, 92% Coverage)
-- [x] CLI-Grundgerüst
-- [x] 197 Unit-Tests (78% Coverage)
+- [x] **CLI-Interface** (funktionsfähig mit 9 Befehlen)
+- [x] 197 Unit-Tests (80% Coverage)
 - [x] CI/CD (GitHub Actions)
 - [x] Logo & Branding
 - [x] Umfassende Dokumentation
 
-### 🚧 In Arbeit (Phase 4.3+)
-- [ ] CLI-Interface (funktionsfähig)
+### 🚧 In Arbeit (Phase 5+)
+- [ ] Backup/Restore-Funktion
 - [ ] GTK-GUI
 - [ ] PolicyKit-Integration
 - [ ] Backup/Restore-Funktion
