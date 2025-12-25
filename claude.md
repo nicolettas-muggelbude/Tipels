@@ -90,6 +90,7 @@ Tipels nutzt eine dreistufige Treiberarchitektur:
 - `tipels.drivers.brother.installer`: DriverInstaller mit Foomatic-Integration
 - `tipels.drivers.brother.scanner`: BrotherScannerManager, SANE/brscan4-Integration
 - `tipels.utils.cups_helper`: CupsHelper, CUPS-Drucker-Verwaltung
+- `tipels.utils.sane_helper`: SaneHelper, SANE-Scanner-Verwaltung (allgemein)
 
 #### Scanner-Integration (SANE)
 Brother-Scanner werden über SANE (Scanner Access Now Easy) verwaltet:
@@ -101,6 +102,21 @@ Brother-Scanner werden über SANE (Scanner Access Now Easy) verwaltet:
 3. **Gruppenverwaltung**: Automatisches Hinzufügen zu scanner, saned, lp
 4. **Test-Scan**: Via `scanimage` für Funktionstest
 5. **Scanner-Status**: Systemprüfung (brscan4, SANE, Gruppen)
+
+**SANE-Helper (Allgemein):**
+Der allgemeine SANE-Helper (`tipels.utils.sane_helper`) bietet herstellerunabhängige Scanner-Funktionen:
+
+1. **SaneHelper**: Wrapper für SANE-Kommandos (subprocess-basiert)
+2. **Scanner-Auflistung**: Via `scanimage -L`
+   - Liste: Alle verfügbaren SANE-Scanner
+   - Parse: Device-Name, Hersteller, Modell, Backend, Typ
+3. **Test-Scan**: Via `scanimage`
+   - Formate: PNM, TIFF, PNG, JPEG
+   - Auflösung: Konfigurierbar (Standard: 150 DPI)
+   - Auto-Device oder spezifischer Scanner
+4. **Scanner-Fähigkeiten**: Via `scanimage --help -d <device>`
+   - Auflösungen, Modi (Color/Gray/Lineart), Quellen (Flatbed/ADF)
+5. **Scanner-Status**: Systemprüfung (SANE, Scanner, Gruppen)
 
 #### CUPS-Integration (Drucker)
 Drucker werden über CUPS (Common UNIX Printing System) verwaltet:
@@ -191,12 +207,12 @@ Drucker werden über CUPS (Common UNIX Printing System) verwaltet:
 - [x] **Scanner-Konfiguration** (USB + Netzwerk, brsaneconfig4)
 - [x] **Benutzer-Gruppenverwaltung** (scanner, saned, lp)
 - [x] **CUPS-Helper** (Drucker registrieren, Status, Testdruck)
-- [x] Unit-Tests (174 Tests, 78% Coverage)
+- [x] **SANE-Helper** (Scanner-Utilities, Auflistung, Test-Scan, Fähigkeiten)
+- [x] Unit-Tests (197 Tests, 78% Coverage)
 - [x] CI/CD (GitHub Actions)
 - [x] Logo & Branding
 - [x] README.md aktualisiert
 - [ ] GitHub-Repository online erstellen
-- [ ] SANE-Helper (Scanner-Utilities)
 - [ ] GUI-Entwicklung (GTK)
 - [ ] CLI-Interface (funktionsfähig)
 - [ ] PolicyKit-Integration

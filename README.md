@@ -242,7 +242,7 @@ make lint
 
 **Aktuelle Version**: v0.1.0 (Alpha - In Entwicklung)
 
-### ✅ Implementiert (Phase 1-3)
+### ✅ Implementiert (Phase 1-4.2)
 - [x] Projekt-Struktur & Setup
 - [x] Logger-System (94% Coverage)
 - [x] Config-System (79% Coverage)
@@ -253,16 +253,16 @@ make lint
 - [x] **DriverInstaller** (Repository + Brother-Website, 67% Coverage)
 - [x] **Brother-Scanner-Manager** (SANE/brscan4, 82% Coverage)
 - [x] **OpenPrinting-First Strategie** (Automatische Multi-Hersteller-Unterstützung)
+- [x] **CUPS-Helper** (Drucker registrieren, Status, Testdruck)
+- [x] **SANE-Helper** (Scanner-Utilities, Auflistung, Test-Scan, Fähigkeiten, 92% Coverage)
 - [x] CLI-Grundgerüst
-- [x] 155 Unit-Tests (76% Coverage)
+- [x] 197 Unit-Tests (78% Coverage)
 - [x] CI/CD (GitHub Actions)
 - [x] Logo & Branding
 - [x] Umfassende Dokumentation
 
-### 🚧 In Arbeit (Phase 4)
-- [ ] CUPS-Helper (Drucker registrieren)
-- [ ] SANE-Helper (Scanner-Utilities)
-- [ ] Testdruck-Funktion
+### 🚧 In Arbeit (Phase 4.3+)
+- [ ] CLI-Interface (funktionsfähig)
 - [ ] GTK-GUI
 - [ ] PolicyKit-Integration
 - [ ] Backup/Restore-Funktion
