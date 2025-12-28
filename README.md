@@ -29,6 +29,16 @@
 
 ---
 
+## 📸 Screenshot
+
+<p align="center">
+  <img src="docs/screenshots/dark-mode.png" alt="Tipels GUI - Dark Mode" width="800"/>
+</p>
+
+*Tipels GUI im Dark Mode - Welcome-View mit gestaffelter Status-Aktualisierung*
+
+---
+
 ## 🐦 Über Tipels
 
 **Tipels** (von *"tipeln"* = kleine Schritte machen) ist eine benutzerfreundliche Linux-Applikation, die das Einrichten von Druckern und Scannern vereinfacht.
@@ -83,15 +93,20 @@ Wie Vogelfußspuren auf einem Blatt Papier führt dich Tipels Schritt für Schri
 - ✅ JSON-Format (`.tipels-backup`)
 
 ### 🎨 Benutzerfreundlich
-- ✅ **GTK-GUI** für Desktop-Umgebungen (GNOME, Cinnamon, XFCE)
-- ✅ **CLI** für Poweruser und Skripte
-- ✅ Deutsch und Englisch (i18n)
-- ✅ Desktop-Benachrichtigungen
-- ✅ Hilfreiche Fehlermeldungen mit Crash-Report-Generator
+- ✅ **GTK3-GUI** (Phase 1 implementiert)
+  - Dark Mode
+  - Moderne StackSidebar-Navigation
+  - Welcome-View mit gestaffelter Status-Aktualisierung
+  - Scrollbares Info-Fenster
+  - Akzentfarbe aus Logo (#3F51B5)
+- ✅ **CLI** für Poweruser und Skripte (vollständig funktionsfähig)
+- 🔜 Deutsch und Englisch (i18n vorbereitet)
+- 🔜 Desktop-Benachrichtigungen
+- ✅ Hilfreiche Fehlermeldungen und Logging
 
 ### 🔒 Sicherheit
-- ✅ **PolicyKit-Integration** für sichere Berechtigungen (GUI)
-- ✅ Granulare Rechte-Vergabe (nur benötigte Aktionen)
+- 🔜 **PolicyKit-Integration** für sichere Berechtigungen (geplant)
+- ✅ Sudo-basierte Berechtigungen (aktuell)
 - ✅ Kein unnötiger Root-Zugriff
 
 ---
@@ -148,14 +163,24 @@ tipels --version
 
 ## 🚀 Verwendung
 
-### GUI-Modus
+### GUI-Modus (GTK3)
 
 ```bash
-# Tipels starten
-tipels
+# GUI starten (Development)
+cd /pfad/zu/Tipels
+./start-gui.sh
+
+# Oder mit PYTHONPATH
+PYTHONPATH=src python3 -m tipels.gui.gtk.main
 ```
 
-Oder über das Anwendungsmenü: **System → Einstellungen → Tipels**
+**Features:**
+- 🌙 Dark Mode
+- 📊 System-Status (CUPS, SANE, Drucker, Scanner)
+- 🔍 Hardware-Scan (geplant - Phase 2)
+- ⚙️ Geräteinstallation (geplant)
+
+*Hinweis: Die GUI ist in Phase 1 - weitere Features folgen!*
 
 ### CLI-Modus
 
@@ -232,8 +257,8 @@ make lint
 ```
 
 **Test-Status:**
-- ✅ 174 Unit-Tests (alle bestehen)
-- ✅ 78% Code-Coverage
+- ✅ 197 Unit-Tests (alle bestehen)
+- ✅ 80% Code-Coverage
 - ✅ CI/CD mit GitHub Actions
 
 ---
@@ -242,7 +267,7 @@ make lint
 
 **Aktuelle Version**: v0.1.0 (Alpha - In Entwicklung)
 
-### ✅ Implementiert (Phase 1-4.3)
+### ✅ Implementiert (Phase 1-5.1)
 - [x] Projekt-Struktur & Setup
 - [x] Logger-System (94% Coverage)
 - [x] Config-System (79% Coverage)
@@ -253,19 +278,27 @@ make lint
 - [x] **DriverInstaller** (Repository + Brother-Website, 67% Coverage)
 - [x] **Brother-Scanner-Manager** (SANE/brscan4, 82% Coverage)
 - [x] **OpenPrinting-First Strategie** (Automatische Multi-Hersteller-Unterstützung)
-- [x] **CUPS-Helper** (Drucker registrieren, Status, Testdruck)
-- [x] **SANE-Helper** (Scanner-Utilities, Auflistung, Test-Scan, Fähigkeiten, 92% Coverage)
-- [x] **CLI-Interface** (funktionsfähig mit 9 Befehlen)
+- [x] **CUPS-Helper** (Drucker registrieren, Status, Testdruck, 87% Coverage)
+- [x] **SANE-Helper** (Scanner-Utilities, Auflistung, Test-Scan, Fähigkeiten, 85% Coverage)
+- [x] **CLI-Interface** (vollständig funktionsfähig mit 9 Befehlen)
+- [x] **GTK3-GUI Phase 1** (Grundgerüst)
+  - Dark Mode
+  - Welcome-View mit gestaffelter Status-Aktualisierung
+  - StackSidebar-Navigation
+  - Scrollbares Info-Fenster
+  - Akzentfarbe aus Logo
+  - Threading-Infrastruktur
 - [x] 197 Unit-Tests (80% Coverage)
 - [x] CI/CD (GitHub Actions)
 - [x] Logo & Branding
 - [x] Umfassende Dokumentation
 
-### 🚧 In Arbeit (Phase 5+)
-- [ ] Backup/Restore-Funktion
-- [ ] GTK-GUI
+### 🚧 In Arbeit (Phase 5.2+)
+- [ ] **GUI Phase 2**: Hardware-Scan-View
+- [ ] **GUI Phase 3**: Installation-Wizard
+- [ ] **GUI Phase 4**: Geräteverwaltung
+- [ ] Backup/Restore-Funktion (vollständig)
 - [ ] PolicyKit-Integration
-- [ ] Backup/Restore-Funktion
 
 ### 📅 Roadmap
 
