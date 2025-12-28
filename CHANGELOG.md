@@ -15,14 +15,35 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
   - PPD-Datei-Suche via lpinfo
   - Vollständige Device-URI-Unterstützung
   - Optional sudo-Support für alle Admin-Operationen
-- **Tests**: 19 neue Unit-Tests für CUPS-Helper (87% Coverage)
-  - 174 Unit-Tests gesamt, 78% Coverage
+- **SANE-Helper**: Herstellerunabhängige Scanner-Verwaltung
+  - Scanner-Auflistung via scanimage -L
+  - Parse: Device-Name, Hersteller, Modell, Backend, Typ
+  - Test-Scan-Funktion (PNM, TIFF, PNG, JPEG)
+  - Konfigurierbare Auflösung (Standard: 150 DPI)
+  - Scanner-Fähigkeiten abfragen (Auflösungen, Modi, Quellen)
+  - Scanner-Status-Prüfung (SANE, Scanner, Gruppen)
+- **CLI-Interface**: Vollständig funktionsfähiges Kommandozeilen-Interface
+  - `scan`: Hardware-Scan (USB + Netzwerk mit --usb, --network, --timeout)
+  - `install`: Drucker/Scanner installieren (--model, --connection, --ip, --name, --type)
+  - `remove`: Drucker/Scanner entfernen (--printer, --scanner mit Bestätigung)
+  - `list`: Installierte Geräte auflisten (--printers, --scanners)
+  - `status`: System-Status anzeigen (CUPS, SANE, Gruppen, Treiber)
+  - `test-print`: Testdruck durchführen (--file für eigene Datei)
+  - `test-scan`: Test-Scan durchführen (--device, --output, --format, --resolution)
+  - `backup`: Backup erstellen (Platzhalter)
+  - `restore`: Backup wiederherstellen (Platzhalter)
+  - Farbcodierte Ausgabe (Grün ✓, Rot ✗, Gelb ⚠)
+  - Detaillierte Fehlermeldungen und Logging
+  - Exit-Codes für Skript-Integration
+- **Tests**: 23 neue Unit-Tests hinzugefügt
+  - 19 Tests für CUPS-Helper (87% Coverage)
+  - 4 Tests für SANE-Helper (85% Coverage)
+  - 197 Unit-Tests gesamt, 80% Coverage
 
 ### Geplant
-- SANE-Helper (Scanner-Utilities)
 - GTK-GUI
 - PolicyKit-Integration
-- Backup/Restore-Funktion
+- Backup/Restore-Funktion (vollständige Implementierung)
 - .deb & Snap Packaging
 
 ## [0.2.0] - 2025-12-14
