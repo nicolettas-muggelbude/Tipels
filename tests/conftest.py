@@ -63,7 +63,7 @@ network socket"""
     # TODO: Weitere Mock-Funktionen hinzufügen
 
     return {
-        'lsusb': mock_lsusb,
-        'lpinfo': mock_lpinfo,
-        'scanimage': mock_scanimage,
+        "lsusb": mock_lsusb,
+        "lpinfo": mock_lpinfo,
+        "scanimage": mock_scanimage,
     }

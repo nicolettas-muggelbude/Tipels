@@ -32,9 +32,10 @@ Tipels ist eine Linux-Applikation zur vereinfachten Einrichtung von Druckern und
    - Manuelle IP-Eingabe für Poweruser
 
 2. **Treiberinstallation**
-   - Ubuntu-Repositories (primär)
-   - Brother-Website (automatischer Download)
-   - Open-Source-Alternativen (brlaser, etc.)
+   - **OpenPrinting-First Strategie**: Foomatic-DB (primär, ~10.000+ Drucker)
+   - Ubuntu-Repositories (OpenPrinting-Treiber: brlaser, hplip, gutenprint)
+   - Brother-Website (automatischer Download als Fallback)
+   - Intelligentes Caching erkannter Drucker
    - Automatische Installation von Abhängigkeiten
 
 3. **Multi-Geräte-Verwaltung**
@@ -58,6 +59,120 @@ Tipels ist eine Linux-Applikation zur vereinfachten Einrichtung von Druckern und
    - Anonymisierte Logs für Support
 
 ## Technische Entscheidungen
+
+### Treiberarchitektur
+
+#### OpenPrinting-First Strategie
+Tipels nutzt eine dreistufige Treiberarchitektur:
+
+1. **Foomatic-DB (Primär, alle Hersteller)**
+   - Integration mit CUPS via `lpinfo -m`
+   - Zugriff auf ~10.000+ Drucker-PPD-Dateien
+   - Automatische Erkennung für Brother, HP, Canon, Epson, Xerox, Lexmark, etc.
+   - Treiber-Priorität: brlaser (10) > hplip (9) > gutenprint (8) > postscript (7)
+   - In-Memory + Persistenter Cache für schnellen Zugriff
+
+2. **Tipels Printer Cache**
+   - JSON-basierte Datenbank erkannter Drucker
+   - Speicherort: `~/.local/share/tipels/printer_cache.json`
+   - Speichert: OpenPrinting-Treiber, Official-Treiber, PPD-Namen, last_used
+   - Case-insensitive Schlüssel (manufacturer:model)
+
+3. **Herstellerspezifische Treiber (Fallback)**
+   - Brother Official Drivers (.deb Download von Brother-Website)
+   - Nur wenn Foomatic keinen Treiber findet ODER User explizit wünscht
+   - Nützlich für spezielle Features (Fax, erweiterte Funktionen)
+   - Modellspezifische Download-URLs in driver_db.py
+
+#### Implementierte Module
+- `tipels.core.foomatic`: FoomaticDetector, lpinfo-Parser, Treiber-Matching
+- `tipels.core.printer_cache`: PrinterCache, JSON-Persistenz
+- `tipels.drivers.brother.installer`: DriverInstaller mit Foomatic-Integration
+- `tipels.drivers.brother.scanner`: BrotherScannerManager, SANE/brscan4-Integration
+- `tipels.utils.cups_helper`: CupsHelper, CUPS-Drucker-Verwaltung
+- `tipels.utils.sane_helper`: SaneHelper, SANE-Scanner-Verwaltung (allgemein)
+
+#### Scanner-Integration (SANE)
+Brother-Scanner werden über SANE (Scanner Access Now Easy) verwaltet:
+
+1. **brscan4-Treiber**: Brother Scanner Driver für SANE
+2. **Scanner-Registrierung**: Via `brsaneconfig4`
+   - USB: `brsaneconfig4 -a name=Brother model=MFC-L2700DN nodename=/dev/usb/lp0`
+   - Netzwerk: `brsaneconfig4 -a name=Brother model=MFC-L2700DN ip=192.168.1.100`
+3. **Gruppenverwaltung**: Automatisches Hinzufügen zu scanner, saned, lp
+4. **Test-Scan**: Via `scanimage` für Funktionstest
+5. **Scanner-Status**: Systemprüfung (brscan4, SANE, Gruppen)
+
+**SANE-Helper (Allgemein):**
+Der allgemeine SANE-Helper (`tipels.utils.sane_helper`) bietet herstellerunabhängige Scanner-Funktionen:
+
+1. **SaneHelper**: Wrapper für SANE-Kommandos (subprocess-basiert)
+2. **Scanner-Auflistung**: Via `scanimage -L`
+   - Liste: Alle verfügbaren SANE-Scanner
+   - Parse: Device-Name, Hersteller, Modell, Backend, Typ
+3. **Test-Scan**: Via `scanimage`
+   - Formate: PNM, TIFF, PNG, JPEG
+   - Auflösung: Konfigurierbar (Standard: 150 DPI)
+   - Auto-Device oder spezifischer Scanner
+4. **Scanner-Fähigkeiten**: Via `scanimage --help -d <device>`
+   - Auflösungen, Modi (Color/Gray/Lineart), Quellen (Flatbed/ADF)
+5. **Scanner-Status**: Systemprüfung (SANE, Scanner, Gruppen)
+
+#### CUPS-Integration (Drucker)
+Drucker werden über CUPS (Common UNIX Printing System) verwaltet:
+
+1. **CupsHelper**: Wrapper für CUPS-Kommandos (subprocess-basiert)
+2. **Drucker-Verwaltung**: Via `lpadmin`
+   - Hinzufügen: `lpadmin -p name -E -v uri -m ppd -L location -D description`
+   - Entfernen: `lpadmin -x name`
+3. **Drucker-Abfragen**: Via `lpstat`, `lpoptions`
+   - Liste: `lpstat -p` (alle Drucker)
+   - Status: `lpstat -p name -l` (detaillierter Status)
+   - URI: `lpstat -v name` (Device-URI)
+   - Jobs: `lpstat -o name` (aktive Druckaufträge)
+4. **PPD-Suche**: Via `lpinfo -m` (verfügbare PPD-Dateien)
+5. **Testdruck**: Via `lp -d printer testfile`
+6. **Unterstützte Verbindungen**: USB, IPP, Socket, LPD
+
+#### CLI-Interface
+Vollständig funktionsfähiges Kommandozeilen-Interface mit folgenden Befehlen:
+
+1. **scan**: Hardware-Scan (USB + Netzwerk)
+   - Optionen: `--usb`, `--network`, `--timeout`
+   - Zeigt alle gefundenen Geräte mit Details
+
+2. **install**: Drucker/Scanner installieren
+   - Optionen: `--model`, `--connection`, `--ip`, `--name`, `--type`
+   - Automatische Treiber-Installation und CUPS/SANE-Konfiguration
+
+3. **remove**: Drucker/Scanner entfernen
+   - Optionen: `--printer`, `--scanner`
+   - Mit Bestätigungsdialog
+
+4. **list**: Installierte Geräte auflisten
+   - Optionen: `--printers`, `--scanners`
+   - Zeigt CUPS-Drucker und SANE-Scanner
+
+5. **status**: System-Status anzeigen
+   - CUPS, SANE, Gruppen, Brother-Treiber
+   - Farbcodierte Ausgabe (Grün/Gelb/Rot)
+
+6. **test-print**: Testdruck durchführen
+   - Argument: `printer_name`
+   - Option: `--file` (eigene Test-Datei)
+
+7. **test-scan**: Test-Scan durchführen
+   - Optionen: `--device`, `--output`, `--format`, `--resolution`
+   - Unterstützte Formate: PNM, TIFF, PNG, JPEG
+
+8. **backup**: Backup erstellen (Platzhalter)
+9. **restore**: Backup wiederherstellen (Platzhalter)
+
+**Features:**
+- Farbige Ausgabe für bessere UX (Grün ✓, Rot ✗, Gelb ⚠)
+- Detaillierte Fehlermeldungen
+- Logging für Debugging
+- Exit-Codes für Skript-Integration
 
 ### Architektur
 - **Modularer Aufbau**: Plugin-System für Hersteller
@@ -121,16 +236,25 @@ Tipels ist eine Linux-Applikation zur vereinfachten Einrichtung von Druckern und
 - [x] GitHub-Repository-Struktur lokal
 - [x] Logger-System (94% Coverage)
 - [x] Config-System (79% Coverage)
-- [x] Unit-Tests (29 Tests, 52% Coverage)
+- [x] Hardware-Erkennung (USB + Netzwerk)
+- [x] Device-Klassen (Printer, Scanner, MFP)
+- [x] Brother Treiber-Datenbank (OpenPrinting + Official)
+- [x] **Foomatic-Integration** (lpinfo-Parser, Treiber-Matching)
+- [x] **Printer Cache** (JSON-basiert, persistent)
+- [x] **DriverInstaller** (Repository + Brother-Website-Download)
+- [x] **OpenPrinting-First Strategie** (Foomatic → Brother Official Fallback)
+- [x] **Brother Scanner-Manager** (SANE/brscan4-Integration)
+- [x] **Scanner-Konfiguration** (USB + Netzwerk, brsaneconfig4)
+- [x] **Benutzer-Gruppenverwaltung** (scanner, saned, lp)
+- [x] **CUPS-Helper** (Drucker registrieren, Status, Testdruck)
+- [x] **SANE-Helper** (Scanner-Utilities, Auflistung, Test-Scan, Fähigkeiten)
+- [x] **CLI-Interface** (funktionsfähig mit 9 Befehlen)
+- [x] Unit-Tests (197 Tests, 80% Coverage)
 - [x] CI/CD (GitHub Actions)
 - [x] Logo & Branding
 - [x] README.md aktualisiert
 - [ ] GitHub-Repository online erstellen
-- [ ] Prototyp (USB+Netzwerk, Drucker+Scanner)
-- [ ] Treiberlogik
-- [ ] CUPS/SANE-Integration
 - [ ] GUI-Entwicklung (GTK)
-- [ ] CLI-Interface (funktionsfähig)
 - [ ] PolicyKit-Integration
 - [ ] Backup/Restore-Funktion
 - [ ] Dokumentation erweitern

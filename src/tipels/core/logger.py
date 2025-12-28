@@ -33,8 +33,7 @@ class TipelsLogger:
 
         # Formatter
         formatter = logging.Formatter(
-            fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S"
+            fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
         )
 
         # Console Handler
@@ -45,9 +44,7 @@ class TipelsLogger:
 
         # File Handler mit Rotation
         file_handler = RotatingFileHandler(
-            log_file,
-            maxBytes=10 * 1024 * 1024,  # 10 MB
-            backupCount=5
+            log_file, maxBytes=10 * 1024 * 1024, backupCount=5  # 10 MB
         )
         file_handler.setLevel(log_level)
         file_handler.setFormatter(formatter)

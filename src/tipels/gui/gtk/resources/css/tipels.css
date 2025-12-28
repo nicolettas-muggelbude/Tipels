@@ -1,0 +1,123 @@
+/*
+ * Tipels GTK3 CSS Theme
+ *
+ * Akzentfarbe: #3F51B5 (Indigo-Blau aus Logo)
+ */
+
+/* Farbvariablen */
+@define-color tipels_accent_color #3F51B5;
+@define-color tipels_accent_hover #5161c5;
+@define-color tipels_accent_active #2f3f95;
+
+/* Primary Buttons (Akzentfarbe) */
+.primary,
+button.suggested-action {
+    background-image: linear-gradient(to bottom, @tipels_accent_color, shade(@tipels_accent_color, 0.9));
+    border-color: shade(@tipels_accent_color, 0.8);
+    color: white;
+}
+
+.primary:hover,
+button.suggested-action:hover {
+    background-image: linear-gradient(to bottom, @tipels_accent_hover, shade(@tipels_accent_hover, 0.9));
+    border-color: shade(@tipels_accent_hover, 0.8);
+}
+
+.primary:active,
+button.suggested-action:active {
+    background-image: linear-gradient(to bottom, @tipels_accent_active, shade(@tipels_accent_active, 0.9));
+    border-color: shade(@tipels_accent_active, 0.8);
+}
+
+/* Links */
+link,
+link:link {
+    color: @tipels_accent_color;
+}
+
+link:hover {
+    color: @tipels_accent_hover;
+}
+
+/* Progress Bars */
+progressbar progress {
+    background-color: @tipels_accent_color;
+    background-image: linear-gradient(to bottom, @tipels_accent_color, shade(@tipels_accent_color, 0.9));
+}
+
+/* Selection */
+.view:selected,
+.view selection,
+row:selected {
+    background-color: @tipels_accent_color;
+    color: white;
+}
+
+/* Switches (Toggle) */
+switch:checked {
+    background-color: @tipels_accent_color;
+}
+
+switch slider:checked {
+    border-color: @tipels_accent_color;
+}
+
+/* Checkboxes und Radio Buttons */
+checkbutton:checked,
+radiobutton:checked {
+    color: @tipels_accent_color;
+}
+
+check:checked,
+radio:checked {
+    background-color: @tipels_accent_color;
+    border-color: @tipels_accent_color;
+}
+
+/* Welcome View - Action Buttons */
+.welcome-action-button {
+    min-height: 100px;
+    min-width: 200px;
+    border-radius: 8px;
+    background-image: linear-gradient(to bottom, @tipels_accent_color, shade(@tipels_accent_color, 0.9));
+    border: 2px solid shade(@tipels_accent_color, 0.8);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.welcome-action-button:hover {
+    background-image: linear-gradient(to bottom, @tipels_accent_hover, shade(@tipels_accent_hover, 0.9));
+    border-color: shade(@tipels_accent_hover, 0.8);
+}
+
+.welcome-action-button:active {
+    background-image: linear-gradient(to bottom, @tipels_accent_active, shade(@tipels_accent_active, 0.9));
+}
+
+/* Status Badges */
+.status-badge-ready {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.status-badge-offline {
+    color: #ff9800;
+    font-weight: bold;
+}
+
+.status-badge-error {
+    color: #f44336;
+    font-weight: bold;
+}
+
+/* Sidebar */
+stacksidebar row:selected {
+    background-color: @tipels_accent_color;
+    color: white;
+}
+
+/* Spinner */
+spinner {
+    color: @tipels_accent_color;
+}
