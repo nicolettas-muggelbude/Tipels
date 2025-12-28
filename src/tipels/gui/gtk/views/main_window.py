@@ -5,12 +5,13 @@ Hauptfenster mit Navigation und Content-Area
 """
 
 import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gio
+
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gio, Gtk
 
 from tipels import __version__
-from tipels.gui.gtk.views.welcome_view import WelcomeView
 from tipels.gui.gtk.dialogs.info_dialog import InfoDialog
+from tipels.gui.gtk.views.welcome_view import WelcomeView
 
 
 class MainWindow(Gtk.ApplicationWindow):

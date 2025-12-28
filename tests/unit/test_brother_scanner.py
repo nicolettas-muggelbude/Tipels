@@ -2,16 +2,17 @@
 Tests für Brother Scanner-Manager
 """
 
-import pytest
-from unittest.mock import MagicMock, patch
 import subprocess
+from unittest.mock import MagicMock, patch
 
+import pytest
+
+from tipels.core.logger import TipelsLogger
 from tipels.drivers.brother.scanner import (
     BrotherScannerManager,
-    ScannerConnectionType,
     ScannerConfigurationError,
+    ScannerConnectionType,
 )
-from tipels.core.logger import TipelsLogger
 
 
 class TestBrotherScannerManager:

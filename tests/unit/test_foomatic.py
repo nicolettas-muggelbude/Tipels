@@ -2,13 +2,13 @@
 Tests für Foomatic-Integration
 """
 
-import pytest
-from unittest.mock import MagicMock, patch
 import subprocess
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from tipels.core.foomatic import FoomaticDetector, FoomaticDriver
 from tipels.core.logger import TipelsLogger
-
 
 # Mock lpinfo -m Ausgabe
 MOCK_LPINFO_OUTPUT = """drv:///sample.drv/generic.ppd Generic PCL Laser Printer

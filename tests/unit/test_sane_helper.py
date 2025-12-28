@@ -2,19 +2,20 @@
 Tests für SANE-Helper
 """
 
-import pytest
-from unittest.mock import MagicMock, patch
 import subprocess
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
-from tipels.utils.sane_helper import (
-    SaneHelper,
-    SaneError,
-    ScannerState,
-    ScannerInfo,
-    ScanFormat,
-)
+import pytest
+
 from tipels.core.logger import TipelsLogger
+from tipels.utils.sane_helper import (
+    SaneError,
+    SaneHelper,
+    ScanFormat,
+    ScannerInfo,
+    ScannerState,
+)
 
 
 class TestSaneHelper:

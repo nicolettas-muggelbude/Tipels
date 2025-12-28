@@ -6,8 +6,8 @@ Zentrales Logging für Tipels mit einfachen und Debug-Logs
 
 import logging
 import sys
-from pathlib import Path
 from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
 
 class TipelsLogger:

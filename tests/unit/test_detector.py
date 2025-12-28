@@ -2,13 +2,13 @@
 Tests für Hardware-Detector
 """
 
-import pytest
 from unittest.mock import MagicMock
 
-from tipels.core.detector import HardwareDetector
-from tipels.core.device import DeviceType, ConnectionType, DeviceStatus
-from tipels.core.logger import TipelsLogger
+import pytest
 
+from tipels.core.detector import HardwareDetector
+from tipels.core.device import ConnectionType, DeviceStatus, DeviceType
+from tipels.core.logger import TipelsLogger
 
 # Mock lsusb Ausgabe
 MOCK_LSUSB_OUTPUT = """Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub

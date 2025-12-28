@@ -3,14 +3,15 @@ Tests für Brother Treiber-Datenbank
 """
 
 import pytest
+
 from tipels.drivers.brother.driver_db import (
     BROTHER_DRIVERS,
     MODEL_DRIVER_MAPPING,
-    DriverType,
     DriverSource,
+    DriverType,
+    get_driver_info,
     get_recommended_driver,
     get_scanner_driver,
-    get_driver_info,
 )
 
 

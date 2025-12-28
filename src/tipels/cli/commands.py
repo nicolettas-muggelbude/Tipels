@@ -4,20 +4,20 @@ Tipels - CLI Commands
 Kommandozeilen-Interface für Tipels
 """
 
-import click
 import sys
-from typing import Optional
 from pathlib import Path
+from typing import Optional
+
+import click
 
 from tipels import __version__
-from tipels.core.logger import TipelsLogger
 from tipels.core.detector import HardwareDetector
 from tipels.core.device import DeviceType
-from tipels.utils.cups_helper import CupsHelper, CupsError
-from tipels.utils.sane_helper import SaneHelper, SaneError
+from tipels.core.logger import TipelsLogger
 from tipels.drivers.brother.installer import DriverInstaller
 from tipels.drivers.brother.scanner import BrotherScannerManager
-
+from tipels.utils.cups_helper import CupsError, CupsHelper
+from tipels.utils.sane_helper import SaneError, SaneHelper
 
 # Logger
 logger = TipelsLogger("tipels.cli")
@@ -89,7 +89,9 @@ def scan(usb, network, timeout):
         click.echo("=" * 70)
 
         for device in devices:
-            device_type_str = "🖨️  Drucker" if device.device_type == DeviceType.PRINTER else "🖼️  Scanner"
+            device_type_str = (
+                "🖨️  Drucker" if device.device_type == DeviceType.PRINTER else "🖼️  Scanner"
+            )
             if device.device_type == DeviceType.MFP:
                 device_type_str = "🖨️ 🖼️  Multifunktionsgerät"
 
@@ -114,10 +116,18 @@ def scan(usb, network, timeout):
 
 @cli.command()
 @click.option("--model", required=True, help="Drucker/Scanner-Modell (z.B. MFC-L2700DN)")
-@click.option("--connection", type=click.Choice(["usb", "network"]), required=True, help="Verbindungstyp")
+@click.option(
+    "--connection", type=click.Choice(["usb", "network"]), required=True, help="Verbindungstyp"
+)
 @click.option("--ip", help="IP-Adresse (erforderlich bei Netzwerk)")
 @click.option("--name", help="Gerätename im System (optional)")
-@click.option("--type", "device_type", type=click.Choice(["printer", "scanner", "both"]), default="both", help="Gerätetyp")
+@click.option(
+    "--type",
+    "device_type",
+    type=click.Choice(["printer", "scanner", "both"]),
+    default="both",
+    help="Gerätetyp",
+)
 def install(model, connection, ip, name, device_type):
     """Installiere Drucker/Scanner"""
 
@@ -142,7 +152,7 @@ def install(model, connection, ip, name, device_type):
             result = installer.install_driver(
                 model=model,
                 connection_type="network" if connection == "network" else "usb",
-                ip_address=ip
+                ip_address=ip,
             )
 
             if result:
@@ -161,7 +171,7 @@ def install(model, connection, ip, name, device_type):
                     uri=uri,
                     ppd_file=ppd_file,
                     description=f"Brother {model}",
-                    use_sudo=True
+                    use_sudo=True,
                 )
                 success(f"Drucker '{name}' in CUPS registriert")
             else:
@@ -176,14 +186,19 @@ def install(model, connection, ip, name, device_type):
                 warning("brscan4 ist nicht installiert. Installiere zuerst den Scanner-Treiber.")
             else:
                 from tipels.drivers.brother.scanner import ScannerConnectionType
-                conn_type = ScannerConnectionType.NETWORK if connection == "network" else ScannerConnectionType.USB
+
+                conn_type = (
+                    ScannerConnectionType.NETWORK
+                    if connection == "network"
+                    else ScannerConnectionType.USB
+                )
 
                 scanner_mgr.add_scanner(
                     name=name,
                     model=model,
                     connection_type=conn_type,
                     device_node="/dev/usb/lp0" if connection == "usb" else None,
-                    ip_address=ip if connection == "network" else None
+                    ip_address=ip if connection == "network" else None,
                 )
                 success(f"Scanner '{name}' erfolgreich konfiguriert")
 
@@ -419,7 +434,13 @@ def test_print(printer_name, test_file):
 @cli.command("test-scan")
 @click.option("--device", help="Scanner-Device (optional, nutzt ersten verfügbaren)")
 @click.option("--output", default="/tmp/tipels_scan.pnm", help="Ausgabedatei")
-@click.option("--format", "scan_format", type=click.Choice(["pnm", "tiff", "png", "jpeg"]), default="pnm", help="Scan-Format")
+@click.option(
+    "--format",
+    "scan_format",
+    type=click.Choice(["pnm", "tiff", "png", "jpeg"]),
+    default="pnm",
+    help="Scan-Format",
+)
 @click.option("--resolution", default=150, help="Scan-Auflösung (DPI)")
 def test_scan(device, output, scan_format, resolution):
     """Führe Test-Scan durch"""
@@ -444,7 +465,7 @@ def test_scan(device, output, scan_format, resolution):
             device_name=device,
             output_file=output,
             scan_format=format_map[scan_format],
-            resolution=resolution
+            resolution=resolution,
         )
 
         success(f"Test-Scan erfolgreich: {output}")

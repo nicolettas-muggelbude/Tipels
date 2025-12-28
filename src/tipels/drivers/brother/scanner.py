@@ -4,11 +4,11 @@ Tipels - Brother Scanner-Konfiguration
 Verwaltet Brother-Scanner via SANE (brscan4)
 """
 
-import subprocess
 import re
-from typing import Optional, List, Dict, Tuple
+import subprocess
 from dataclasses import dataclass
 from enum import Enum
+from typing import Dict, List, Optional, Tuple
 
 from tipels.core.logger import TipelsLogger
 

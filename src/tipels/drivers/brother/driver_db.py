@@ -5,8 +5,8 @@ Enthält Informationen über verfügbare Treiber für Brother-Geräte
 """
 
 from dataclasses import dataclass
-from typing import Optional, List
 from enum import Enum
+from typing import List, Optional
 
 
 class DriverType(Enum):

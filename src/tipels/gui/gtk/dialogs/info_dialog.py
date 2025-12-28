@@ -5,19 +5,20 @@ Scrollbares Info-Fenster mit Version, Credits und Beschreibung
 """
 
 import gi
-gi.require_version('Gtk', '3.0')
+
+gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
 from tipels import (
-    __version__,
+    __authors__,
     __copyright__,
     __description__,
-    __long_description__,
-    __website__,
-    __website_label__,
-    __authors__,
     __documenters__,
     __license__,
+    __long_description__,
+    __version__,
+    __website__,
+    __website_label__,
 )
 
 
@@ -36,10 +37,7 @@ class InfoDialog(Gtk.Dialog):
             parent: Parent-Window
         """
         super().__init__(
-            title="Über Tipels",
-            transient_for=parent,
-            modal=True,
-            destroy_with_parent=True
+            title="Über Tipels", transient_for=parent, modal=True, destroy_with_parent=True
         )
 
         self.set_default_size(500, 600)

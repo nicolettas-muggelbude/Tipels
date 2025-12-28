@@ -4,12 +4,12 @@ Tipels - CUPS Helper
 Wrapper für CUPS (Common UNIX Printing System) Operationen
 """
 
-import subprocess
 import re
-from typing import Optional, List, Dict, Tuple
-from pathlib import Path
+import subprocess
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
 
 from tipels.core.logger import TipelsLogger
 
@@ -109,7 +109,11 @@ class CupsHelper:
             )
 
             # lpstat gibt Exit-Code 1 wenn keine Drucker installiert sind
-            if result.returncode != 0 and result.stderr and "No destinations added" not in result.stderr:
+            if (
+                result.returncode != 0
+                and result.stderr
+                and "No destinations added" not in result.stderr
+            ):
                 raise CupsError(f"lpstat fehlgeschlagen: {result.stderr}")
 
             printers = []

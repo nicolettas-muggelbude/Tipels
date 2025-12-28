@@ -5,8 +5,9 @@ Startseite mit Schnellzugriff und System-Status
 """
 
 import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+
+gi.require_version("Gtk", "3.0")
+from gi.repository import GLib, Gtk
 
 from tipels.utils.cups_helper import CupsHelper
 from tipels.utils.sane_helper import SaneHelper

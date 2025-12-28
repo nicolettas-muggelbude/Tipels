@@ -2,17 +2,18 @@
 Tests für Brother Driver-Installer
 """
 
-import pytest
-from unittest.mock import MagicMock, patch, mock_open
 import subprocess
-from pathlib import Path
 import tempfile
+from pathlib import Path
+from unittest.mock import MagicMock, mock_open, patch
 
-from tipels.drivers.brother.installer import (
-    DriverInstaller,
-    DriverInstallationError,
-)
+import pytest
+
 from tipels.core.logger import TipelsLogger
+from tipels.drivers.brother.installer import (
+    DriverInstallationError,
+    DriverInstaller,
+)
 
 
 class TestDriverInstaller:

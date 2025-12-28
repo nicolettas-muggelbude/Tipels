@@ -5,13 +5,14 @@ Gtk.Application Subclass für Tipels
 """
 
 import gi
-gi.require_version('Gtk', '3.0')
-gi.require_version('Gdk', '3.0')
-from gi.repository import Gtk, Gdk, Gio
+
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+from gi.repository import Gdk, Gio, Gtk
 
 from tipels import __version__
-from tipels.core.logger import TipelsLogger
 from tipels.core.config import TipelsConfig
+from tipels.core.logger import TipelsLogger
 
 
 class TipelsApplication(Gtk.Application):
@@ -23,10 +24,7 @@ class TipelsApplication(Gtk.Application):
 
     def __init__(self):
         """Initialisiert die Tipels-Anwendung."""
-        super().__init__(
-            application_id='org.tipels.Tipels',
-            flags=Gio.ApplicationFlags.FLAGS_NONE
-        )
+        super().__init__(application_id="org.tipels.Tipels", flags=Gio.ApplicationFlags.FLAGS_NONE)
 
         # Logger und Config
         self.logger = TipelsLogger("tipels.gui")
@@ -71,6 +69,7 @@ class TipelsApplication(Gtk.Application):
 
         # Hauptfenster erstellen
         from tipels.gui.gtk.views.main_window import MainWindow
+
         self.main_window = MainWindow(application=self, logger=self.logger)
         self.main_window.present()
 
@@ -112,9 +111,7 @@ class TipelsApplication(Gtk.Application):
                 screen = Gdk.Screen.get_default()
                 style_context = Gtk.StyleContext()
                 style_context.add_provider_for_screen(
-                    screen,
-                    css_provider,
-                    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+                    screen, css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
                 )
 
                 self.logger.info(f"Akzentfarbe CSS geladen: {css_path}")

@@ -4,10 +4,10 @@ Tipels - Foomatic-DB Integration
 Nutzt die Foomatic-Datenbank für automatische Treiber-Erkennung
 """
 
-import subprocess
 import re
-from typing import Optional, List, Dict
+import subprocess
 from dataclasses import dataclass
+from typing import Dict, List, Optional
 
 from tipels.core.logger import TipelsLogger
 

@@ -2,9 +2,11 @@
 Unit-Tests für das Tipels Konfigurations-System
 """
 
-import pytest
 import json
 from pathlib import Path
+
+import pytest
+
 from tipels.core.config import TipelsConfig
 
 

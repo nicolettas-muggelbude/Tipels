@@ -5,7 +5,8 @@ Threading-Infrastruktur für asynchrone Operationen in GTK3
 """
 
 import threading
-from typing import Callable, Any, Optional
+from typing import Any, Callable, Optional
+
 from gi.repository import GLib
 
 
@@ -35,7 +36,7 @@ class AsyncTask:
         self,
         task_func: Callable,
         callback: Optional[Callable] = None,
-        error_callback: Optional[Callable] = None
+        error_callback: Optional[Callable] = None,
     ):
         """
         Initialisiert AsyncTask.
@@ -58,6 +59,7 @@ class AsyncTask:
             *args: Positionsargumente für task_func
             **kwargs: Keyword-Argumente für task_func
         """
+
         def thread_func():
             try:
                 result = self.task_func(*args, **kwargs)
@@ -90,15 +92,12 @@ def run_in_thread(func: Callable) -> Callable:
 
         long_operation()  # Läuft in separatem Thread
     """
+
     def wrapper(*args, **kwargs):
-        thread = threading.Thread(
-            target=func,
-            args=args,
-            kwargs=kwargs,
-            daemon=True
-        )
+        thread = threading.Thread(target=func, args=args, kwargs=kwargs, daemon=True)
         thread.start()
         return thread
+
     return wrapper
 
 

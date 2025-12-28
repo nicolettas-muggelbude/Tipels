@@ -2,14 +2,15 @@
 Tests für Drucker-Cache
 """
 
-import pytest
 import json
 import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from tipels.core.printer_cache import PrinterCache
+import pytest
+
 from tipels.core.logger import TipelsLogger
+from tipels.core.printer_cache import PrinterCache
 
 
 class TestPrinterCache:

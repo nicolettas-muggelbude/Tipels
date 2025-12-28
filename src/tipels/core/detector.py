@@ -6,12 +6,11 @@ Hardware-Detector für USB- und Netzwerk-Geräte
 
 import re
 import subprocess
-from typing import List, Optional, Callable
 from pathlib import Path
+from typing import Callable, List, Optional
 
-from tipels.core.device import Device, DeviceType, ConnectionType, DeviceStatus
+from tipels.core.device import ConnectionType, Device, DeviceStatus, DeviceType
 from tipels.core.logger import TipelsLogger
-
 
 # GitHub Issue-Template URL für Hardware-Support-Anfragen
 HARDWARE_SUPPORT_URL = (

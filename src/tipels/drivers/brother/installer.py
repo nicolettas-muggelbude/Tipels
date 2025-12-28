@@ -4,23 +4,24 @@ Tipels - Brother Treiber-Installation
 Installiert und verwaltet Brother-Drucker- und Scanner-Treiber
 """
 
-import subprocess
 import re
+import subprocess
 import tempfile
-import requests
-from typing import Optional, List, Tuple
 from pathlib import Path
+from typing import List, Optional, Tuple
 from urllib.parse import urlparse
 
-from tipels.core.logger import TipelsLogger
+import requests
+
 from tipels.core.foomatic import FoomaticDetector, FoomaticDriver
+from tipels.core.logger import TipelsLogger
 from tipels.core.printer_cache import PrinterCache
 from tipels.drivers.brother.driver_db import (
+    DriverInfo,
+    DriverSource,
     get_driver_info,
     get_recommended_driver,
     get_scanner_driver,
-    DriverInfo,
-    DriverSource,
 )
 
 

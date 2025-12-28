@@ -3,13 +3,14 @@ Tests für Device-Datenklassen
 """
 
 import pytest
+
 from tipels.core.device import (
+    ConnectionType,
     Device,
+    DeviceStatus,
+    DeviceType,
     Printer,
     Scanner,
-    DeviceType,
-    ConnectionType,
-    DeviceStatus,
 )
 
 

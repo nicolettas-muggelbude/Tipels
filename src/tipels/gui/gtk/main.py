@@ -5,6 +5,7 @@ Startet die GTK3-GUI
 """
 
 import sys
+
 from tipels.gui.gtk.application import TipelsApplication
 
 

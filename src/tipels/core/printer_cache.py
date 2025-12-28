@@ -5,9 +5,9 @@ Speichert erkannte Drucker und ihre Treiber für schnellen Zugriff
 """
 
 import json
-from pathlib import Path
-from typing import Optional, Dict, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Optional
 
 from tipels.core.logger import TipelsLogger
 

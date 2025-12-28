@@ -2,18 +2,19 @@
 Tests für CUPS-Helper
 """
 
-import pytest
-from unittest.mock import MagicMock, patch, mock_open
 import subprocess
 from pathlib import Path
+from unittest.mock import MagicMock, mock_open, patch
 
-from tipels.utils.cups_helper import (
-    CupsHelper,
-    CupsError,
-    PrinterState,
-    PrinterInfo,
-)
+import pytest
+
 from tipels.core.logger import TipelsLogger
+from tipels.utils.cups_helper import (
+    CupsError,
+    CupsHelper,
+    PrinterInfo,
+    PrinterState,
+)
 
 
 class TestCupsHelper:

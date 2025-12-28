@@ -4,12 +4,12 @@ Tipels - SANE Helper
 Wrapper für SANE (Scanner Access Now Easy) Operationen
 """
 
-import subprocess
 import re
-from typing import Optional, List, Dict
-from pathlib import Path
+import subprocess
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Dict, List, Optional
 
 from tipels.core.logger import TipelsLogger
 
@@ -215,9 +215,7 @@ class SaneHelper:
                 # Prüfe ob Datei erstellt wurde
                 if Path(output_file).exists():
                     file_size = Path(output_file).stat().st_size
-                    self.logger.info(
-                        f"Test-Scan erfolgreich: {output_file} ({file_size} Bytes)"
-                    )
+                    self.logger.info(f"Test-Scan erfolgreich: {output_file} ({file_size} Bytes)")
                     return True
                 else:
                     error_msg = f"Scan-Befehl erfolgreich, aber Datei nicht erstellt: {output_file}"
