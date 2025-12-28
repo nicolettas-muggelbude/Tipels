@@ -52,6 +52,9 @@ class DriverInstaller:
         self.use_foomatic = use_foomatic
 
         # Foomatic-Integration
+        self.foomatic: Optional[FoomaticDetector]
+        self.cache: Optional[PrinterCache]
+
         if use_foomatic:
             self.foomatic = FoomaticDetector(logger=self.logger)
             self.cache = PrinterCache(cache_file=cache_file, logger=self.logger)
@@ -545,6 +548,10 @@ class DriverInstaller:
 
             # Installiere Drucker-Treiber
             if driver_info.source == DriverSource.REPOSITORY:
+                if not driver_info.package_name:
+                    error_msg = f"Kein Paketname für '{driver_name}' hinterlegt"
+                    self.logger.error(error_msg)
+                    raise DriverInstallationError(error_msg)
                 success = self.install_from_repository(driver_info.package_name, use_sudo=use_sudo)
                 if success:
                     installed_packages.append(driver_info.package_name)
@@ -574,11 +581,16 @@ class DriverInstaller:
                 if scanner_driver_name:
                     scanner_info = get_driver_info(scanner_driver_name)
                     if scanner_info and scanner_info.source == DriverSource.REPOSITORY:
-                        success = self.install_from_repository(
-                            scanner_info.package_name, use_sudo=use_sudo
-                        )
-                        if success:
-                            installed_packages.append(scanner_info.package_name)
+                        if not scanner_info.package_name:
+                            self.logger.warning(
+                                f"Kein Paketname für Scanner-Treiber '{scanner_driver_name}'"
+                            )
+                        else:
+                            success = self.install_from_repository(
+                                scanner_info.package_name, use_sudo=use_sudo
+                            )
+                            if success:
+                                installed_packages.append(scanner_info.package_name)
 
         # Fehler wenn keine Installation erfolgreich war
         if not installed_packages:

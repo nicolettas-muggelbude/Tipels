@@ -6,7 +6,7 @@ Enthält Informationen über verfügbare Treiber für Brother-Geräte
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 
 class DriverType(Enum):
@@ -41,7 +41,7 @@ class DriverInfo:
     version: Optional[str] = None
 
     # Unterstützte Modelle (Regex-Pattern)
-    supported_models: List[str] = None  # z.B. ["MFC-L.*", "DCP-L.*"]
+    supported_models: Optional[List[str]] = None  # z.B. ["MFC-L.*", "DCP-L.*"]
 
     # Zusätzliche Infos
     description: Optional[str] = None
@@ -191,7 +191,7 @@ def get_recommended_driver(model: str, prefer_opensource: bool = True) -> Option
 
     # Standardmäßig: bevorzugter Treiber
     # (prefer_opensource ist bereits im Mapping berücksichtigt)
-    return preferred
+    return cast(Optional[str], preferred)
 
 
 def get_scanner_driver(model: str) -> Optional[str]:
@@ -208,7 +208,7 @@ def get_scanner_driver(model: str) -> Optional[str]:
     if not mapping:
         return None
 
-    return mapping.get("scanner")
+    return cast(Optional[str], mapping.get("scanner"))
 
 
 def get_driver_info(driver_name: str) -> Optional[DriverInfo]:

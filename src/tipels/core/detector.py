@@ -7,7 +7,7 @@ Hardware-Detector für USB- und Netzwerk-Geräte
 import re
 import subprocess
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, cast
 
 from tipels.core.device import ConnectionType, Device, DeviceStatus, DeviceType
 from tipels.core.logger import TipelsLogger
@@ -113,7 +113,7 @@ class HardwareDetector:
             List[Device]: Liste der USB-Geräte
         """
         self.logger.info("Scanne USB-Geräte...")
-        devices = []
+        devices: List[Device] = []
 
         lsusb_output = self._lsusb_command()
         if not lsusb_output:
@@ -148,7 +148,7 @@ class HardwareDetector:
             List[Device]: Liste der Netzwerk-Geräte
         """
         self.logger.info("Scanne Netzwerk-Geräte...")
-        devices = []
+        devices: List[Device] = []
 
         avahi_output = self._avahi_command()
         if not avahi_output:
@@ -444,8 +444,8 @@ class HardwareDetector:
             return None
 
         # Erstelle Device-Objekt
-        model = device_info["model"]
-        device_type = device_info["type"]
+        model = cast(str, device_info["model"])
+        device_type = cast(DeviceType, device_info["type"])
 
         connection_uri = f"usb://Brother/{model}?serial=unknown"
 

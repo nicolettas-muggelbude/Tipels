@@ -5,7 +5,7 @@ Threading-Infrastruktur für asynchrone Operationen in GTK3
 """
 
 import threading
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, cast
 
 from gi.repository import GLib
 
@@ -112,4 +112,4 @@ def idle_add(func: Callable, *args) -> int:
     Returns:
         Source ID (für g_source_remove)
     """
-    return GLib.idle_add(func, *args)
+    return cast(int, GLib.idle_add(func, *args))
