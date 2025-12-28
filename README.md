@@ -32,7 +32,7 @@
 ## 📸 Screenshot
 
 <p align="center">
-  <img src="docs/screenshots/dark-mode.png" alt="Tipels GUI - Dark Mode" width="800"/>
+  <img src="https://raw.githubusercontent.com/nicolettas-muggelbude/Tipels/feature/hardware-detector/docs/screenshots/dark-mode.png" alt="Tipels GUI - Dark Mode" width="800"/>
 </p>
 
 *Tipels GUI im Dark Mode - Welcome-View mit gestaffelter Status-Aktualisierung*
